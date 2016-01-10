@@ -3,7 +3,7 @@ var RootScreen = function() {
 		yield LoadingScreen();
 		
 		while (true) {
-			// yield TitleScreen();
+			yield TitleScreen();
 			yield MainScreen();
 		}
 	});

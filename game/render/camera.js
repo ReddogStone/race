@@ -4,7 +4,7 @@ var Camera = (function() {
 			context.save();
 
 			context.beginPath();
-			context.rect(viewport.x, viewport.y, viewport.sx, viewport.sy);
+			context.rect(x, y, sx, sy);
 			context.clip();
 
 			render(context);

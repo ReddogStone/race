@@ -10,7 +10,8 @@ var MINIMAP_STYLE = {
 
 var MAP_STYLE = {
 	road: '#9090F0',
-	bg: '#202060'
+	bg: '#202060',
+	rasterLineWidth: 0.005
 };
 
 var PLAYER_STYLE = {
@@ -50,6 +51,8 @@ var WIN_BG_STYLE = {
 var MINIMAP_CELL_SIZE = 15;
 var MAP_CELL_SIZE = 400;
 var MAP_ROAD_SIZE = 200;
+
+var VIEW_BORDER = 10;
 
 var PLAYER_BASE_SPEED = 1;
 var PLAYER_SPEED_SCALE = 0.2;

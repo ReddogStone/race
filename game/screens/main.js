@@ -335,8 +335,8 @@ var MainScreen = function() {
 		}
 	}
 
-	var miniMapOffset1 = vec(40, 40);
-	var miniMapOffset2 = vec(800, 40);
+	var miniMapOffset1 = vec(10, 10);
+	var miniMapOffset2 = vec(806, 10);
 
 	return function(event) {
 		if (event.type !== 'show') {
@@ -370,6 +370,9 @@ var MainScreen = function() {
 				MiniMap.render(event.context, map, miniMapOffset2);
 				MiniMap.renderPlayer(event.context, miniMapOffset2, player.mapPos, player.style);
 				MiniMap.renderPlayer(event.context, miniMapOffset2, player2.mapPos, player2.style); */
+
+				MapView.render(context, map, rcoords(0, 0, canvas.width * 0.5, canvas.height), [player2, player]);
+				MapView.render(context, map, rcoords(canvas.width * 0.5, 0, canvas.width * 0.5, canvas.height), [player, player2]);
 
 				MiniMapView.render(context, map, [player2, player], miniMapOffset1);
 				MiniMapView.render(context, map, [player, player2], miniMapOffset2);
