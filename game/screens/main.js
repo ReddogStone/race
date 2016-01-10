@@ -114,13 +114,6 @@ var MainScreen = function() {
 	behaviorSystem.add(Behavior.run(function*() {
 	}));
 
-	// behaviorSystem.add(function(event) {
-	// 	if (event.type === 'update') {
-	// 		player.rotation += event.dt;
-	// 	}
-	// 	return { done: false };
-	// });
-
 	function turn(newRotation, entity) {
 		var rot = entity.rotation;
 
