@@ -68,16 +68,6 @@ var MainScreen = function() {
 		dir: vec(0, 0)
 	};
 
-	var speedBar = {
-		relativePos: {
-			parent: player,
-			offset: vec(0, 0)
-		},
-		render: { scriptId: 'rect' },
-		rect: { width: 80, height: 40, anchor: vec(0.9, 0.5) },
-		style: SPEED_BAR_STYLE
-	};
-
 	var player2 = {
 		mapPos: vec(0, 4),
 
@@ -91,16 +81,6 @@ var MainScreen = function() {
 
 		speed: 0,
 		dir: vec(0, 0)
-	};
-
-	var speedBar2 = {
-		relativePos: {
-			parent: player2,
-			offset: vec(0, 0)
-		},
-		render: { scriptId: 'rect' },
-		rect: { width: 80, height: 40, anchor: vec(0.9, 0.5) },
-		style: SPEED_BAR_STYLE
 	};
 
 	var gameEnded = false;
@@ -127,9 +107,6 @@ var MainScreen = function() {
 		roundStart = 0;
 
 		winRect.alpha = 0;
-
-		adjustSpeedBar(player, speedBar);
-		adjustSpeedBar(player2, speedBar2);
 	}
 
 	init();
@@ -210,22 +187,11 @@ var MainScreen = function() {
 		return getCell(map, Math.round(target.x), Math.round(target.y));
 	}
 
-	function adjustSpeedBar(entity, speedBarForEntity) {
-		speedBarForEntity.rect.width = entity.rect.width * (entity.speed + 1) / 20;
-		if (speedBarForEntity.rect.width > 0) {
-			speedBarForEntity.rect.anchor.x = entity.rect.width / speedBarForEntity.rect.width * 0.9;
-			speedBarForEntity.alpha = 1;
-		} else {
-			speedBarForEntity.alpha = 0;
-		}
-	}
-
-	function increaseSpeed(entity, speedBarForEntity) {
+	function increaseSpeed(entity) {
 		entity.speed++;
-		adjustSpeedBar(entity, speedBarForEntity);
 	}
 
-	function updatePlayer(dt, entity, speedBarForEntity) {
+	function updatePlayer(dt, entity) {
 		var delta = vscale(entity.dir, dt * (PLAYER_BASE_SPEED + PLAYER_SPEED_SCALE * entity.speed));
 		entity.mapPos = vadd(entity.mapPos, delta);
 
@@ -253,8 +219,6 @@ var MainScreen = function() {
 
 			entity.dir = vec(0, 0);
 			entity.speed = 0;
-
-			adjustSpeedBar(entity, speedBarForEntity);
 		}
 
 		var pos = vclone(entity.mapPos);
@@ -267,15 +231,15 @@ var MainScreen = function() {
 	}
 
 	function update(dt) {
-		updatePlayer(dt, player, speedBar);
-		updatePlayer(dt, player2, speedBar2);
+		updatePlayer(dt, player);
+		updatePlayer(dt, player2);
 
 		if (roundStart > 0) {
 			timeText.text.message = (Time.now() - roundStart).toFixed(2);
 		}
 	}
 
-	function handlePlayerInput(newDir, entity, speedBarForEntity) {
+	function handlePlayerInput(newDir, entity) {
 		var pos = vclone(entity.mapPos);
 		pos.x = Math.round(pos.x);
 		pos.y = Math.round(pos.y);
@@ -293,7 +257,7 @@ var MainScreen = function() {
 			entity.dir = newDir;
 			turn(Math.atan2(newDir.y, newDir.x), entity);
 
-			increaseSpeed(entity, speedBarForEntity);
+			increaseSpeed(entity);
 
 			if (roundStart === 0) {
 				roundStart = Time.now();
@@ -308,29 +272,29 @@ var MainScreen = function() {
 
 		switch (key) {
 			case 37: // left
-				handlePlayerInput(vec(-1, 0), player2, speedBar2);
+				handlePlayerInput(vec(-1, 0), player2);
 				break;
 			case 38: // up
-				handlePlayerInput(vec(0, -1), player2, speedBar2);
+				handlePlayerInput(vec(0, -1), player2);
 				break;
 			case 39: // right
-				handlePlayerInput(vec(1, 0), player2, speedBar2);
+				handlePlayerInput(vec(1, 0), player2);
 				break;
 			case 40: // down
-				handlePlayerInput(vec(0, 1), player2, speedBar2);
+				handlePlayerInput(vec(0, 1), player2);
 				break;
 
 			case 65: // left
-				handlePlayerInput(vec(-1, 0), player, speedBar);
+				handlePlayerInput(vec(-1, 0), player);
 				break;
 			case 87: // up
-				handlePlayerInput(vec(0, -1), player, speedBar);
+				handlePlayerInput(vec(0, -1), player);
 				break;
 			case 68: // right
-				handlePlayerInput(vec(1, 0), player, speedBar);
+				handlePlayerInput(vec(1, 0), player);
 				break;
 			case 83: // down
-				handlePlayerInput(vec(0, 1), player, speedBar);
+				handlePlayerInput(vec(0, 1), player);
 				break;
 		}
 	}
