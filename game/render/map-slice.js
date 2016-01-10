@@ -57,32 +57,6 @@ var MapSlice = (function() {
 	}
 
 	return {
-		renderPlayer: function(context, center, offX, offY, width, height, entity) {
-			context.save();
-			context.translate(offX, offY);
-
-			context.beginPath();
-			context.rect(0, 0, width, height);
-			context.clip();
-
-			var pp = vadd(center, vec(0.5, 0.5));
-			var topLeft = vsub(pp, vscale(vec(width, height), 0.5 / MAP_CELL_SIZE));
-			var relative = vsub(entity.mapPos, topLeft);
-
-			var x = (relative.x + 0.5) * MAP_CELL_SIZE;
-			var y = (relative.y + 0.5) * MAP_CELL_SIZE;
-
-			context.fillStyle = entity.style.fill;
-			context.strokeStyle = entity.style.stroke;
-			context.lineWidth = entity.style.lineWidth;
-
-			context.beginPath();
-			context.rect(x - 80 * 0.9, y - 20, 80, 40);
-			context.fill();
-			context.stroke();
-
-			context.restore();
-		},
 		render: function(context, map) {
 			var mapSx = map[0].length;
 			var mapSy = map.length;

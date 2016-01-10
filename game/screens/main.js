@@ -53,7 +53,7 @@ var MainScreen = function() {
 		"     0--0--0                 ",
 	];
 
-	var player = entities.add({
+	var player = {
 		mapPos: vec(0, 4),
 
 		pos: vec(320, 360),
@@ -66,9 +66,9 @@ var MainScreen = function() {
 
 		speed: 0,
 		dir: vec(0, 0)
-	});
+	};
 
-	var speedBar = entities.add({
+	var speedBar = {
 		relativePos: {
 			parent: player,
 			offset: vec(0, 0)
@@ -76,9 +76,9 @@ var MainScreen = function() {
 		render: { scriptId: 'rect' },
 		rect: { width: 80, height: 40, anchor: vec(0.9, 0.5) },
 		style: SPEED_BAR_STYLE
-	});
+	};
 
-	var player2 = entities.add({
+	var player2 = {
 		mapPos: vec(0, 4),
 
 		pos: vec(960, 360),
@@ -91,17 +91,17 @@ var MainScreen = function() {
 
 		speed: 0,
 		dir: vec(0, 0)
-	});
+	};
 
-	var speedBar2 = entities.add({
+	var speedBar2 = {
 		relativePos: {
 			parent: player2,
 			offset: vec(0, 0)
 		},
 		render: { scriptId: 'rect' },
 		rect: { width: 80, height: 40, anchor: vec(0.9, 0.5) },
-		style: SPEED_BAR2_STYLE
-	});
+		style: SPEED_BAR_STYLE
+	};
 
 	var gameEnded = false;
 	var roundStart = 0;
@@ -356,20 +356,6 @@ var MainScreen = function() {
 			case 'show':
 				var context = event.context;
 				var canvas = context.canvas;
-
-/*				MapSlice.render(event.context, map, player.mapPos, 0, 0, canvas.width * 0.5, canvas.height, PLAYER_STYLE.fill);
-				MapSlice.render(event.context, map, player2.mapPos, canvas.width * 0.5, 0, canvas.width * 0.5, canvas.height, PLAYER2_STYLE.fill);
-
-				MapSlice.renderPlayer(event.context, player.mapPos, 0, 0, canvas.width * 0.5, canvas.height, player2);
-				MapSlice.renderPlayer(event.context, player2.mapPos, canvas.width * 0.5, 0, canvas.width * 0.5, canvas.height, player);
-
-				MiniMap.render(event.context, map, miniMapOffset1);
-				MiniMap.renderPlayer(event.context, miniMapOffset1, player.mapPos, player.style);
-				MiniMap.renderPlayer(event.context, miniMapOffset1, player2.mapPos, player2.style);
-
-				MiniMap.render(event.context, map, miniMapOffset2);
-				MiniMap.renderPlayer(event.context, miniMapOffset2, player.mapPos, player.style);
-				MiniMap.renderPlayer(event.context, miniMapOffset2, player2.mapPos, player2.style); */
 
 				MapView.render(context, map, rcoords(0, 0, canvas.width * 0.5, canvas.height), [player2, player]);
 				MapView.render(context, map, rcoords(canvas.width * 0.5, 0, canvas.width * 0.5, canvas.height), [player, player2]);

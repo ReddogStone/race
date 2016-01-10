@@ -10,5 +10,5 @@ function renderMap(context, map, left, top, right, bottom, renderCell) {
 		context.translate(left - right, 1);
 	}			
 
-	context.translate(0, top - bottom);
+	context.translate(-left, -bottom);
 }

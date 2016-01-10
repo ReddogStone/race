@@ -5,21 +5,40 @@ var PlayerRenderer = (function() {
 		context.strokeStyle = style.stroke;
 	}
 
+	function renderPlayer(context, pivotX, pivotY, style, render) {
+		setupStyle(context, style);
+		context.lineWidth = PLAYER_GEOMETRY.lineWidth;
+
+		var sx = PLAYER_GEOMETRY.size * PLAYER_GEOMETRY.assymetry;
+		var sy = PLAYER_GEOMETRY.size;
+
+		context.translate(-pivotX * sx, -pivotY * sy);
+		render(context, sx, sy);
+		context.translate(pivotX * sx, pivotY * sy);
+	}
+
 	return {
 		forMap: function(context, pivotX, pivotY, style) {
-			setupStyle(context, style);
-			context.lineWidth = PLAYER_GEOMETRY.lineWidth;
+			renderPlayer(context, pivotX, pivotY, style, function(context, sx, sy) {
+				context.beginPath();
+				context.rect(0, 0, sx, sy);
+				context.fill();
+				context.stroke();
+			});
+		},
+		withSpeedBar: function(context, pivotX, pivotY, style, speedPercentage) {
+			renderPlayer(context, pivotX, pivotY, style, function(context, sx, sy) {
+				context.beginPath();
+				context.rect(0, 0, sx, sy);
+				context.fill();
+				context.stroke();
 
-			context.beginPath();
-
-			var sx = PLAYER_GEOMETRY.size * PLAYER_GEOMETRY.assymetry;
-			var sy = PLAYER_GEOMETRY.size;
-			context.translate(-pivotX * sx, -pivotY * sy);
-			context.rect(-0.5 * sx, -0.5 * sy, sx, sy);
-			context.translate(pivotX * sx, pivotY * sy);
-
-			context.fill();
-			context.stroke();
+				context.fillStyle = SPEED_BAR_STYLE.fill;
+				context.beginPath();
+				context.rect(0, 0, sx * speedPercentage, sy);
+				context.fill();
+				context.stroke();
+			});
 		},
 		forMinimap: function(context, style) {
 			setupStyle(context, style);
