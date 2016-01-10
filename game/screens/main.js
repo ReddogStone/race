@@ -42,15 +42,15 @@ var MainScreen = function() {
 	});
 
 	var map = [
-		"          0---0               ",
-		"          |   |   0---0       ",
-		"     0----0-0 0---0   |       ",
-		"     |      |         |       ",
-		"X-0--0--0---0---0---0-0--0--Y ",
-		"  |     |       0---0 |  |    ",
-		"  |     |  0----0     0--0    ",
-		"  0--0  |  |                  ",
-		"     0--0--0                  ",
+		"          0---0              ",
+		"          |   |   0---0      ",
+		"     0----0-0 0---0   |      ",
+		"     |      |         |      ",
+		"X-0--0--0---0---0---0-0--0--Y",
+		"  |     |       0---0 |  |   ",
+		"  |     |  0----0     0--0   ",
+		"  0--0  |  |                 ",
+		"     0--0--0                 ",
 	];
 
 	var player = entities.add({
@@ -354,9 +354,10 @@ var MainScreen = function() {
 				break;
 
 			case 'show':
-				var canvas = event.context.canvas;
+				var context = event.context;
+				var canvas = context.canvas;
 
-				MapSlice.render(event.context, map, player.mapPos, 0, 0, canvas.width * 0.5, canvas.height, PLAYER_STYLE.fill);
+/*				MapSlice.render(event.context, map, player.mapPos, 0, 0, canvas.width * 0.5, canvas.height, PLAYER_STYLE.fill);
 				MapSlice.render(event.context, map, player2.mapPos, canvas.width * 0.5, 0, canvas.width * 0.5, canvas.height, PLAYER2_STYLE.fill);
 
 				MapSlice.renderPlayer(event.context, player.mapPos, 0, 0, canvas.width * 0.5, canvas.height, player2);
@@ -368,9 +369,12 @@ var MainScreen = function() {
 
 				MiniMap.render(event.context, map, miniMapOffset2);
 				MiniMap.renderPlayer(event.context, miniMapOffset2, player.mapPos, player.style);
-				MiniMap.renderPlayer(event.context, miniMapOffset2, player2.mapPos, player2.style);
+				MiniMap.renderPlayer(event.context, miniMapOffset2, player2.mapPos, player2.style); */
 
-				renderSystem.show(event.context, entities);
+				MiniMapView.render(context, map, [player2, player], miniMapOffset1);
+				MiniMapView.render(context, map, [player, player2], miniMapOffset2);
+
+				renderSystem.show(context, entities);
 				break;
 
 			case 'keydown':

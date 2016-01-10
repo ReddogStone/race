@@ -3,8 +3,9 @@ var MINIMAP_STYLE = {
 	stroke: '#202060',
 	bg: '#C0C0FF',
 	border: 'black',
-	lineWidth: 2,
-	dotRadius: 5
+	lineWidth: 0.12,
+	dotRadius: 0.33,
+	outerRadius: 0.58
 };
 
 var MAP_STYLE = {
@@ -14,14 +15,18 @@ var MAP_STYLE = {
 
 var PLAYER_STYLE = {
 	fill: '#90F090',
-	stroke: '#206020',
-	lineWidth: 5
+	stroke: '#206020'
 };
 
 var PLAYER2_STYLE = {
 	fill: '#F09090',
-	stroke: '#602020',
-	lineWidth: 5
+	stroke: '#602020'
+};
+
+var PLAYER_GEOMETRY = {
+	size: 0.3,
+	assymetry: 1.5,
+	lineWidth: 0.12
 };
 
 var SPEED_BAR_STYLE = {
