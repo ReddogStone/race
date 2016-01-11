@@ -17,13 +17,19 @@ var MapView = (function() {
 					Camera.transform(context, mainPlayer.mapPos, 0, MAP_CELL_SIZE, function(context) {
 						MapSlice.render(context, map);
 
-						var anchor = mainPlayer.anchor;
-						var mapPos = mainPlayer.mapPos;
-						var rotation = mainPlayer.rotation;
+						players.forEach(function(player) {
+							var anchor = player.anchor;
+							var mapPos = player.mapPos;
+							var rotation = player.rotation;
 
-						renderTransformed(context, mapPos.x, mapPos.y, rotation, 1, function(context) {
-							var speedPercentage = Math.min((mainPlayer.speed + 1) / MAX_PLAYER_SPEED, 1.0);
-							PlayerRenderer.withSpeedBar(context, anchor.x, anchor.y, mainPlayer.style, speedPercentage);
+							renderTransformed(context, mapPos.x, mapPos.y, rotation, 1, function(context) {
+								if (player === mainPlayer) {
+									var speedPercentage = Math.min((player.speed + 1) / MAX_PLAYER_SPEED, 1.0);
+									PlayerRenderer.withSpeedBar(context, anchor.x, anchor.y, player.style, speedPercentage);
+								} else {
+									PlayerRenderer.forMap(context, anchor.x, anchor.y, player.style);
+								}
+							});
 						});
 					});
 				});

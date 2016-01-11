@@ -4,12 +4,16 @@ function renderTranslated(context, x, y, render) {
 	context.translate(-x, -y);
 }
 
-function renderTransformed(context, x, y, rot, uniformScale, render) {
+function renderTransformed(context, x, y, rot, scale, render) {
+	if (typeof scale !== 'object') {
+		scale = vec(scale, scale);
+	}
+
 	context.save();
 
 	context.translate(x, y);
 	context.rotate(rot);
-	context.scale(uniformScale, uniformScale);
+	context.scale(scale.x, scale.y);
 
 	render(context);
 
