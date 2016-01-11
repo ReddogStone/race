@@ -37,7 +37,7 @@ var MainScreen = function(map, playerCount) {
 		size: vec(600, 100),
 		text: {
 			font: { name: 'consolas', height: 50, lineSpacing: 1.5 },
-			message: "Chose direction"
+			message: "Choose direction"
 		},
 		render: { scriptId: 'text' },
 		style: { fill: 'red' },
@@ -176,9 +176,9 @@ var MainScreen = function(map, playerCount) {
 			case 'show':
 				var context = event.context;
 
-				players.forEach(function(player, index) {
-					renderPlayerScene(context, map, players, index, sceneDescriptions[index]);
-				});
+				for (var i = 0; i < playerCount; i++) {
+					renderPlayerScene(context, map, players, i, sceneDescriptions[i]);
+				}
 
 				renderSystem.show(context, entities);
 				break;
