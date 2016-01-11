@@ -17,7 +17,7 @@ var MapView = (function() {
 					Camera.transform(context, mainPlayer.mapPos, 0, MAP_CELL_SIZE, function(context) {
 						MapSlice.render(context, map);
 
-						var anchor = mainPlayer.rect.anchor;
+						var anchor = mainPlayer.anchor;
 						var mapPos = mainPlayer.mapPos;
 						var rotation = mainPlayer.rotation;
 

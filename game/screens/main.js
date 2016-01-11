@@ -1,4 +1,4 @@
-var MainScreen = function() {
+var MainScreen = function(map, playerCount) {
 	var entities = EntitySystem();
 	var behaviorSystem = BehaviorSystem();
 	var renderSystem = RenderSystem({
@@ -8,14 +8,15 @@ var MainScreen = function() {
 		'circle': renderCircle
 	});
 
-	var playerLogic = PlayerLogic.init(behaviorSystem);
+	var playerLogic = PlayerLogic(behaviorSystem);
 
 	var winRect = entities.add({
 		pos: vec(640, 150),
 		render: { scriptId: 'rect' },
 		rect: { width: 1000, height: 400, anchor: vec(0.5, 0) },
 		style: WIN_BG_STYLE,
-		zOrder: 3
+		zOrder: 3,
+		alpha: 0
 	});
 
 	var youWinText = entities.add({
@@ -36,74 +37,14 @@ var MainScreen = function() {
 		size: vec(600, 100),
 		text: {
 			font: { name: 'consolas', height: 50, lineSpacing: 1.5 },
-			message: ""
+			message: "Chose direction to start"
 		},
 		render: { scriptId: 'text' },
 		style: { fill: 'red' },
 		zOrder: 4,
 	});
 
-	var map = [
-		"          0---0              ",
-		"          |   |   0---0      ",
-		"     0----0-0 0---0   |      ",
-		"     |      |         |      ",
-		"X-0--0--0---0---0---0-0--0--Y",
-		"  |     |       0---0 |  |   ",
-		"  |     |  0----0     0--0   ",
-		"  0--0  |  |                 ",
-		"     0--0--0                 ",
-	];
-
 	var startPos = MapLogic.getStart(map);
-
-	var player = {
-		name: 'GREEN',
-
-		pos: vec(320, 360),
-		rotation: 0,
-
-		rect: { width: 80, height: 40, anchor: vec(0.9, 0.5) },
-		style: PLAYER_STYLE,
-
-		mapPos: vec(0, 4),
-		speed: 0,
-		dir: vec(0, 0)
-	};
-
-	var player2 = {
-		name: 'RED',
-
-		pos: vec(960, 360),
-		rotation: 0,
-
-		rect: { width: 80, height: 40, anchor: vec(0.9, 0.5) },
-		style: PLAYER2_STYLE,
-
-		mapPos: vec(0, 4),
-		speed: 0,
-		dir: vec(0, 0)
-	};
-
-	var gameEnded = false;
-	var roundStart = 0;
-
-	function init() {
-		playerLogic.init(player, startPos);
-		playerLogic.init(player2, startPos);
-
-		youWinText.text.message = '';
-		youWinText.alpha = 0;
-
-		timeText.text.message = 'RIGHT-ARROW to start'
-
-		gameEnded = false;
-		roundStart = 0;
-
-		winRect.alpha = 0;
-	}
-
-	init();
 
 	function win(entity) {
 		var time = Time.now() - roundStart;
@@ -141,6 +82,37 @@ var MainScreen = function() {
 		}
 	}
 
+	function keyDown(key) {
+		var action = KEY_MAP[key];
+		if (action) {
+			var handled = playerLogic.handleInput(map, action.player, action.dir);
+			if ((roundStart === 0) && handled) {
+				roundStart = Time.now();
+			}
+		}
+	}
+
+	function makePlayer(name, style, offset) {
+		var result = {
+			name: name,
+			pos: vclone(offset),
+			rotation: 0,
+			anchor: vec(0.9, 0.5),
+			style: style
+		};
+		playerLogic.init(result, startPos);
+		return result;
+	}
+
+	var miniMapOffset1 = vec(10, 10);
+	var miniMapOffset2 = vec(806, 10);
+
+	var gameEnded = false;
+	var roundStart = 0;
+
+	var player = makePlayer('GREEN', PLAYER_STYLE, vec(320, 360));
+	var player2 = makePlayer('RED', PLAYER2_STYLE, vec(960, 360));
+
 	var KEY_MAP = {
 		37: { player: player2, dir: vec(-1, 0) },
 		38: { player: player2, dir: vec(0, -1) },
@@ -152,19 +124,6 @@ var MainScreen = function() {
 		68: { player: player, dir: vec(1, 0) },
 		83: { player: player, dir: vec(0, 1) }
 	};
-
-	function keyDown(key) {
-		var action = KEY_MAP[key];
-		if (action) {
-			var handled = playerLogic.handleInput(map, action.player, action.dir);
-			if ((roundStart === 0) && handled) {
-				roundStart = Time.now();
-			}
-		}
-	}
-
-	var miniMapOffset1 = vec(10, 10);
-	var miniMapOffset2 = vec(806, 10);
 
 	return function(event) {
 		if (event.type !== 'show') {
@@ -196,10 +155,10 @@ var MainScreen = function() {
 
 			case 'keydown':
 				if (gameEnded) {
-					init();
-				} else {
-					keyDown(event.keyCode);
+					return {};
 				}
+
+				keyDown(event.keyCode);
 				break;
 		}
 	};
