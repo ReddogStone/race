@@ -9,11 +9,11 @@ var MapView = (function() {
 	}
 
 	return {
-		render: function(context, map, viewport, players) {
+		render: function(context, map, viewport, players, offset) {
 			var mainPlayer = players[players.length - 1];
 
 			Camera.viewport(context, viewport.x, viewport.y, viewport.sx, viewport.sy, function(context) {
-				renderTranslated(context, mainPlayer.pos.x, mainPlayer.pos.y, function(context) {
+				renderTranslated(context, offset.x, offset.y, function(context) {
 					Camera.transform(context, mainPlayer.mapPos, 0, MAP_CELL_SIZE, function(context) {
 						MapSlice.render(context, map);
 

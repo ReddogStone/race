@@ -37,7 +37,7 @@ var MainScreen = function(map, playerCount) {
 		size: vec(600, 100),
 		text: {
 			font: { name: 'consolas', height: 50, lineSpacing: 1.5 },
-			message: "Chose direction to start"
+			message: "Chose direction"
 		},
 		render: { scriptId: 'text' },
 		style: { fill: 'red' },
@@ -92,10 +92,9 @@ var MainScreen = function(map, playerCount) {
 		}
 	}
 
-	function makePlayer(name, style, offset) {
+	function makePlayer(name, style) {
 		var result = {
 			name: name,
-			pos: vclone(offset),
 			rotation: 0,
 			anchor: vec(0.9, 0.5),
 			style: style
@@ -104,14 +103,20 @@ var MainScreen = function(map, playerCount) {
 		return result;
 	}
 
-	var miniMapOffset1 = vec(10, 10);
-	var miniMapOffset2 = vec(806, 10);
+	var miniMapOffset1 = vec(0.008, 0.014);
+	var miniMapOffset2 = vec(0.508, 0.014);
 
 	var gameEnded = false;
 	var roundStart = 0;
 
-	var player = makePlayer('GREEN', PLAYER_STYLE, vec(320, 360));
-	var player2 = makePlayer('RED', PLAYER2_STYLE, vec(960, 360));
+	var player = makePlayer('GREEN', PLAYER_STYLE);
+	var player2 = makePlayer('RED', PLAYER2_STYLE);
+
+	var offset1 = vec(0.25, 0.5);
+	var offset2 = vec(0.75, 0.5);
+
+	var viewport1 = rcoords(0, 0, 0.5, 1);
+	var viewport2 = rcoords(0.5, 0, 0.5, 1);
 
 	var KEY_MAP = {
 		37: { player: player2, dir: vec(-1, 0) },
@@ -144,11 +149,21 @@ var MainScreen = function(map, playerCount) {
 				var context = event.context;
 				var canvas = context.canvas;
 
-				MapView.render(context, map, rcoords(0, 0, canvas.width * 0.5, canvas.height), [player2, player]);
-				MapView.render(context, map, rcoords(canvas.width * 0.5, 0, canvas.width * 0.5, canvas.height), [player, player2]);
+				var size = vec(canvas.width, canvas.height);
+				var vp1 = rscale(viewport1, size);
+				var vp2 = rscale(viewport2, size);
 
-				MiniMapView.render(context, map, [player2, player], miniMapOffset1);
-				MiniMapView.render(context, map, [player, player2], miniMapOffset2);
+				var off1 = vmul(offset1, size);
+				var off2 = vmul(offset2, size);
+
+				var moff1 = vmul(miniMapOffset1, size);
+				var moff2 = vmul(miniMapOffset2, size);
+
+				MapView.render(context, map, vp1, [player2, player], off1);
+				MiniMapView.render(context, map, [player2, player], moff1);
+
+				MapView.render(context, map, vp2, [player, player2], off2);
+				MiniMapView.render(context, map, [player, player2], moff2);
 
 				renderSystem.show(context, entities);
 				break;

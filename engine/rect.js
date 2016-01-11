@@ -16,3 +16,7 @@ function rinside(rect, point) {
 
 	return (dx >= 0) && (dy >= 0) && (dx <= rect.sx) && (dy <= rect.sy);
 }
+
+function rscale(rect, v) {
+	return rcoords(rect.x * v.x, rect.y * v.y, rect.sx * v.x, rect.sy * v.y);
+}
