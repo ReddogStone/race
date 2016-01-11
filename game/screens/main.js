@@ -175,6 +175,10 @@ var MainScreen = function() {
 		return row[x];
 	}
 
+	function getCurrentCell(map, pos) {
+		return getCell(map, Math.round(pos.x), Math.round(pos.y));
+	}
+
 	function getTargetCell(map, pos, dir) {
 		var target = vadd(pos, dir);
 		return getCell(map, Math.round(target.x), Math.round(target.y));
@@ -232,6 +236,10 @@ var MainScreen = function() {
 		}
 	}
 
+	function canTurn(currentCell, targetCell) {
+		return targetCell && (targetCell !== ' ') && ('0XY'.indexOf(currentCell) >= 0);
+	}
+
 	function handlePlayerInput(newDir, entity) {
 		var pos = vclone(entity.mapPos);
 		pos.x = Math.round(pos.x);
@@ -245,8 +253,9 @@ var MainScreen = function() {
 			return;
 		}
 
+		var currentCell = getCurrentCell(map, entity.mapPos);
 		var targetCell = getTargetCell(map, entity.mapPos, newDir);
-		if (targetCell && targetCell !== ' ') {
+		if (canTurn(currentCell, targetCell)) {
 			entity.dir = newDir;
 			turn(Math.atan2(newDir.y, newDir.x), entity);
 
