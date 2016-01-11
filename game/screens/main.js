@@ -55,7 +55,7 @@ var MainScreen = function() {
 		"     0--0--0                 ",
 	];
 
-	var startPos = vec(0, 4);
+	var startPos = MapLogic.getStart(map);
 
 	var player = {
 		name: 'GREEN',

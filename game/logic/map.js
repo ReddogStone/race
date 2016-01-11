@@ -6,6 +6,14 @@ var MapLogic = (function() {
 	}
 
 	return {
+		getStart: function(map) {
+			for (var y = 0; y < map.length; y++) {
+				var x = map[y].indexOf('X');
+				if (x >= 0) {
+					return vec(x, y);
+				}
+			}
+		},
 		getCell: function(map, pos) {
 			return getCell(map, Math.round(pos.x), Math.round(pos.y));
 		},
