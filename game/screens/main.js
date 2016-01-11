@@ -67,15 +67,12 @@ var MainScreen = function(map, playerCount) {
 	}
 
 	function update(dt) {
-		var finished1 = playerLogic.update(map, player, dt);
-		var finished2 = playerLogic.update(map, player2, dt);
-
-		if (finished1) {
-			win(player);
-		}
-		if (finished2) {
-			win(player2);
-		}
+		players.forEach(function(player) {
+			var finished = playerLogic.update(map, player, dt);
+			if (finished) {
+				win(player);
+			}
+		});
 
 		if (roundStart > 0) {
 			timeText.text.message = (Time.now() - roundStart).toFixed(2);
@@ -103,32 +100,63 @@ var MainScreen = function(map, playerCount) {
 		return result;
 	}
 
-	var miniMapOffset1 = vec(0.008, 0.014);
-	var miniMapOffset2 = vec(0.508, 0.014);
-
 	var gameEnded = false;
 	var roundStart = 0;
 
-	var player = makePlayer('GREEN', PLAYER_STYLE);
-	var player2 = makePlayer('RED', PLAYER2_STYLE);
+	var players = [
+		makePlayer('GREEN', PLAYER_STYLE),
+		makePlayer('RED', PLAYER2_STYLE)
+	];
 
-	var offset1 = vec(0.25, 0.5);
-	var offset2 = vec(0.75, 0.5);
+	players = players.slice(0, playerCount);
 
-	var viewport1 = rcoords(0, 0, 0.5, 1);
-	var viewport2 = rcoords(0.5, 0, 0.5, 1);
+	var sceneDescriptions = [
+		{
+			offset: vec(0.25, 0.5),
+			viewport: rcoords(0, 0, 0.5, 1),
+			miniMapOffset: vec(0.008, 0.014)
+		},
+		{
+			offset: vec(0.75, 0.5),
+			viewport: rcoords(0.5, 0, 0.5, 1),
+			miniMapOffset: vec(0.508, 0.014)
+		}
+	];
+
+	if (playerCount < 2) {
+		sceneDescriptions[0].viewport.sx = 1;
+		sceneDescriptions[0].offset.x = 0.5;
+		sceneDescriptions[0].miniMapOffset.x += 0.5;
+	}
 
 	var KEY_MAP = {
-		37: { player: player2, dir: vec(-1, 0) },
-		38: { player: player2, dir: vec(0, -1) },
-		39: { player: player2, dir: vec(1, 0) },
-		40: { player: player2, dir: vec(0, 1) },
+		// left, up, right, down
+		37: { player: players[1], dir: vec(-1, 0) },
+		38: { player: players[1], dir: vec(0, -1) },
+		39: { player: players[1], dir: vec(1, 0) },
+		40: { player: players[1], dir: vec(0, 1) },
 
-		65: { player: player, dir: vec(-1, 0) },
-		87: { player: player, dir: vec(0, -1) },
-		68: { player: player, dir: vec(1, 0) },
-		83: { player: player, dir: vec(0, 1) }
+		// a, w, d, s
+		65: { player: players[0], dir: vec(-1, 0) },
+		87: { player: players[0], dir: vec(0, -1) },
+		68: { player: players[0], dir: vec(1, 0) },
+		83: { player: players[0], dir: vec(0, 1) }
 	};
+
+	function renderPlayerScene(context, map, players, mainPlayerIndex, description) {
+		var canvas = context.canvas;
+
+		var size = vec(canvas.width, canvas.height);
+		var vp = rscale(description.viewport, size);
+		var off = vmul(description.offset, size);
+		var moff = vmul(description.miniMapOffset, size);
+
+		var prioritizedPlayers = players.slice();
+		prioritizedPlayers.push(prioritizedPlayers.splice(mainPlayerIndex, 1)[0]);
+
+		MapView.render(context, map, vp, prioritizedPlayers, off);
+		MiniMapView.render(context, map, prioritizedPlayers, moff);
+	}
 
 	return function(event) {
 		if (event.type !== 'show') {
@@ -147,23 +175,10 @@ var MainScreen = function(map, playerCount) {
 
 			case 'show':
 				var context = event.context;
-				var canvas = context.canvas;
 
-				var size = vec(canvas.width, canvas.height);
-				var vp1 = rscale(viewport1, size);
-				var vp2 = rscale(viewport2, size);
-
-				var off1 = vmul(offset1, size);
-				var off2 = vmul(offset2, size);
-
-				var moff1 = vmul(miniMapOffset1, size);
-				var moff2 = vmul(miniMapOffset2, size);
-
-				MapView.render(context, map, vp1, [player2, player], off1);
-				MiniMapView.render(context, map, [player2, player], moff1);
-
-				MapView.render(context, map, vp2, [player, player2], off2);
-				MiniMapView.render(context, map, [player, player2], moff2);
+				players.forEach(function(player, index) {
+					renderPlayerScene(context, map, players, index, sceneDescriptions[index]);
+				});
 
 				renderSystem.show(context, entities);
 				break;

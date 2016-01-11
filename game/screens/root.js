@@ -18,7 +18,7 @@ var RootScreen = function() {
 			yield TitleScreen();
 
 			while (true) {
-				yield MainScreen(map, 2);
+				yield MainScreen(map, 1);
 			}
 		}
 	});
