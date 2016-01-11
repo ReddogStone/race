@@ -1,8 +1,16 @@
 var MapLogic = (function() {
-	function getCell(map, x, y) {
-		var row = map[y];
+	function getCell(map, pos) {
+		var row = map[Math.round(pos.y)];
 		if (!row) { return undefined; }
-		return row[x];
+		return row[Math.round(pos.x)];
+	}
+
+	function isCrossing(value) {
+		return (value === '0') || (value === 'X') || (value === 'Y');
+	}
+
+	function canTravel(value, dir) {
+		return isCrossing(value) || ((dir.x !== 0) && (value === '-')) || ((dir.y !== 0) && (value === '|'));
 	}
 
 	return {
@@ -14,11 +22,14 @@ var MapLogic = (function() {
 				}
 			}
 		},
-		getCell: function(map, pos) {
-			return getCell(map, Math.round(pos.x), Math.round(pos.y));
+		getCell: getCell,
+		getCellCoords: function(pos) {
+			return vec(Math.round(pos.x), Math.round(pos.y));
 		},
-		canTurn: function(map, current, target) {
-			return target && (target !== ' ') && ('0XY'.indexOf(current) >= 0);
+		canGo: function(map, pos, dir) {
+			var current = getCell(map, pos);
+			var target = getCell(map, vadd(pos, dir));
+			return target && canTravel(current, dir) && canTravel(target, dir);
 		}
 	};
 })();

@@ -4,6 +4,10 @@ var PlayerLogic = function(behaviorSystem) {
 	}
 
 	function turn(player, newRotation) {
+		if (player.cancelToMiddle) {
+			player.cancelToMiddle();
+		}
+
 		var rot = player.rotation;
 
 		if (Math.abs(newRotation - rot) > Math.PI) {
@@ -24,7 +28,7 @@ var PlayerLogic = function(behaviorSystem) {
 	function toMiddle(player, duration) {
 		var playerPos = vclone(player.mapPos);
 		var target = vec(Math.round(playerPos.x), Math.round(playerPos.y));
-		behaviorSystem.add(Behavior.interval(duration, function(progress) {
+		player.cancelToMiddle = behaviorSystem.add(Behavior.interval(duration, function(progress) {
 			var a = Math.sin((progress) * 0.5 * Math.PI);
 			player.mapPos = vlerp(playerPos, target, a);
 		}));
@@ -33,10 +37,6 @@ var PlayerLogic = function(behaviorSystem) {
 	function onWin(player) {
 		player.dir = vec(0, 0);
 		toMiddle(player, 1);
-	}
-
-	function getTargetCell(map, pos, dir) {
-		return MapLogic.getCell(map, vadd(pos, dir));
 	}
 
 	return {
@@ -58,7 +58,7 @@ var PlayerLogic = function(behaviorSystem) {
 
 			var dir = player.dir;
 			var mapPos = player.mapPos;
-			var targetCell = getTargetCell(map, mapPos, dir);
+			var targetCell = MapLogic.getCell(map, vadd(mapPos, dir));
 
 			var px = (mapPos.x % 1);
 			var py = (mapPos.y % 1);
@@ -99,9 +99,7 @@ var PlayerLogic = function(behaviorSystem) {
 				return;
 			}
 
-			var currentCell = MapLogic.getCell(map, player.mapPos);
-			var targetCell = getTargetCell(map, player.mapPos, newDir);
-			if (MapLogic.canTurn(map, currentCell, targetCell)) {
+			if (MapLogic.canGo(map, player.mapPos, newDir)) {
 				player.dir = newDir;
 				turn(player, Math.atan2(newDir.y, newDir.x));
 

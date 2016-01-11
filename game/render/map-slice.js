@@ -22,16 +22,16 @@ var MapSlice = (function() {
 		context.fillStyle = MAP_STYLE.road;
 
 		fillRect(context, 0, 0, ROAD_SIZE, ROAD_SIZE);
-		if (left && left !== ' ') {
+		if (MapLogic.canGo(map, vec(x, y), vec(-1, 0))) {
 			fillRect(context, -0.25, 0, 0.5, ROAD_SIZE);
 		}
-		if (right && right !== ' ') {
+		if (MapLogic.canGo(map, vec(x, y), vec(1, 0))) {
 			fillRect(context, 0.25, 0, 0.5, ROAD_SIZE);
 		}
-		if (top && top !== ' ') {
+		if (MapLogic.canGo(map, vec(x, y), vec(0, -1))) {
 			fillRect(context, 0, -0.25, ROAD_SIZE, 0.5);
 		}
-		if (bottom && bottom !== ' ') {
+		if (MapLogic.canGo(map, vec(x, y), vec(0, 1))) {
 			fillRect(context, 0, 0.25, ROAD_SIZE, 0.5);
 		}
 	}
