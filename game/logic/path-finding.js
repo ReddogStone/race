@@ -103,7 +103,7 @@ var PathFinding = (function() {
 					return MapLogic.canGo(map, current.pos, dir);
 				}).forEach(function(dir) {
 					var v = Math.min(current.v + PLAYER_SPEED_SCALE, PLAYER_BASE_SPEED + MAX_PLAYER_SPEED * PLAYER_SPEED_SCALE);
-					var t = current.t + 0.5 / v;
+					var t = current.t + Math.sqrt(TURN_TIME / v);
 					push(fifo, part(current, vadd(current.pos, dir), dir, v, t));
 				});
 

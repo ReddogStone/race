@@ -1,11 +1,15 @@
 var PlayerLogic = function(behaviorSystem) {
 	function increaseSpeed(player) {
-		player.speed++;
+		var newSpeed = Math.min(player.speed + 1, PLAYER_BASE_SPEED + MAX_PLAYER_SPEED * PLAYER_SPEED_SCALE);
+
+		behaviorSystem.add(Behavior.interval(TURN_TIME, function(progress) {
+			player.speed = progress * newSpeed;
+		}));
 	}
 
 	function turn(player, newRotation) {
-		if (player.cancelToMiddle) {
-			player.cancelToMiddle();
+		if (player.cancelMove) {
+			player.cancelMove();
 		}
 
 		var rot = player.rotation;
@@ -29,13 +33,30 @@ var PlayerLogic = function(behaviorSystem) {
 		}));
 	}
 
-	function toMiddle(player, duration) {
-		var playerPos = vclone(player.mapPos);
-		var target = vec(Math.round(playerPos.x), Math.round(playerPos.y));
-		player.cancelToMiddle = behaviorSystem.add(Behavior.interval(duration, function(progress) {
-			var a = Math.sin((progress) * 0.5 * Math.PI);
-			player.mapPos = vlerp(playerPos, target, a);
+	function forceMovePlayer(player, from, to, duration) {
+		if (player.cancelMove) {
+			player.cancelMove();
+		}
+
+		var start = vclone(from);
+		var finish = vclone(to);
+
+		player.cancelMove = behaviorSystem.add(Behavior.run(function*() {
+			yield Behavior.interval(duration, function(progress) {
+				var a = Math.sin((progress) * 0.5 * Math.PI);
+				player.mapPos = vlerp(start, finish, a);
+			});
+			player.blocked = false;
 		}));
+	}
+
+	function toMiddle(player, duration) {
+		forceMovePlayer(player, player.mapPos, MapLogic.getCellCoords(player.mapPos), duration);
+	}
+
+	function backOff(player, amount, duration) {
+		player.blocked = true;
+		forceMovePlayer(player, player.mapPos, vsub(player.mapPos, vscale(player.dir, amount)), duration);
 	}
 
 	function onWin(player) {
@@ -53,24 +74,22 @@ var PlayerLogic = function(behaviorSystem) {
 		return (value === 'Y');
 	}
 
+	function halt(player) {
+		player.burnedPos = null;
+		player.dir = vec(0, 0);
+		player.speed = 0;
+	}
+
 	function collideWithWalls(map, player) {
 		var dir = player.dir;
 		var mapPos = player.mapPos;
 
-		var px = (mapPos.x % 1);
-		var py = (mapPos.y % 1);
-		if (px > 0.5) { px -= 1; }
-		if (py > 0.5) { py -= 1; }
-		px *= 2;
-		py *= 2;
-		var progress = dir.x * px + dir.y * py;
+		var progress = MapLogic.getProgress(mapPos, dir);
 		if (!MapLogic.canGo(map, mapPos, dir) && (progress > MAP_ROAD_SIZE / MAP_CELL_SIZE)) {
 			toMiddle(player, 1);
-
 			player.burnedPos = null;
-
 			player.dir = vec(0, 0);
-			player.speed = 0;
+			player.speed--;
 		}
 	}
 
@@ -102,6 +121,8 @@ var PlayerLogic = function(behaviorSystem) {
 			return false;
 		},		
 		handleInput: function(map, player, newDir) {
+			if (player.blocked) { return; }
+
 			var pos = vclone(player.mapPos);
 			pos.x = Math.round(pos.x);
 			pos.y = Math.round(pos.y);
@@ -116,8 +137,8 @@ var PlayerLogic = function(behaviorSystem) {
 
 			if (MapLogic.canGo(map, player.mapPos, newDir)) {
 				player.dir = newDir;
-				turn(player, Math.atan2(newDir.y, newDir.x));
 
+				turn(player, Math.atan2(newDir.y, newDir.x));
 				increaseSpeed(player);
 
 				player.burnedPos = pos;
@@ -126,6 +147,9 @@ var PlayerLogic = function(behaviorSystem) {
 			}
 
 			return false;
-		}
+		},
+		toMiddle: toMiddle,
+		backOff: backOff,
+		halt: halt
 	};
 }

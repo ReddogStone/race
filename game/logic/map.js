@@ -40,6 +40,15 @@ var MapLogic = (function() {
 		},
 		getSize: function(map) {
 			return vec(map[0].length, map.length);
+		},
+		getProgress: function(pos, dir) {
+			var px = (pos.x % 1);
+			var py = (pos.y % 1);
+			if (px > 0.5) { px -= 1; }
+			if (py > 0.5) { py -= 1; }
+			px *= 2;
+			py *= 2;
+			return vdot(dir, vec(px, py));
 		}
 	};
 })();

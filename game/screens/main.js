@@ -67,17 +67,92 @@ var MainScreen = function(map, playerCount) {
 		gameEnded = true;
 	}
 
-	var shortestPath = PathFinding.shortest(map, startPos, vec(0, 0), 0);
-	function updateAi(entity) {
-		if (shortestPath.length < 2) {
-			return;
+	function key(pos) {
+		return pos.x + ',' + pos.y;
+	}
+
+	function backOffAndHalt(player) {
+		playerLogic.backOff(player, 0.2, 1);
+		playerLogic.halt(player);
+	}
+
+	function collideWithPlayer(player1, player2) {
+		var dist = vdist(player1.mapPos, player2.mapPos);
+		var delta = vsub(player2.mapPos, player1.mapPos);
+		var dirDist = vdot(delta, player1.dir);
+
+		var dot = vdot(player1.dir, player2.dir);
+		if (dot === -1) {
+			if (dist > PLAYER_GEOMETRY.size) { return; }
+			if (dirDist <= 0) { return; }
+
+			backOffAndHalt(player1);
+			backOffAndHalt(player2);
+		} else if (dot === 0) {
+			if (dist > 2 * PLAYER_GEOMETRY.size) { return; }
+			if (dirDist <= 0) { return; }
+
+			backOffAndHalt(player1);
+		} else if ((dot === 1) && (player1.speed > player2.speed)) {
+			if (dist > 4 * PLAYER_GEOMETRY.size) { return; }
+			player1.speed = player2.speed;
 		}
+	}
+
+	function collidePlayers(entities) {
+		var posMap = {};
+		entities.forEach(function(entity) {
+			var pos = MapLogic.getCellCoords(entity.mapPos);
+			posMap[key(pos)] = entity;
+		});
+
+		entities.filter(function(entity) {
+			return !veq(entity.dir, vec(0, 0));
+		}).forEach(function(first) {
+			entities.filter(function(second) {
+				return second !== first;
+			}).forEach(function(second) {
+				collideWithPlayer(first, second);
+			});
+		});
+	}
+
+	function setPath(entity) {
+		shortestPath = [
+			startPos,
+			vec(3, 4),
+			vec(3, 1),
+			vec(7, 1),
+			vec(7, 4),
+			vec(7, 7),
+			vec(11, 7),
+			vec(11, 4),
+			vec(20, 4),
+		];
+
+		shortestPath = PathFinding.shortest(map, entity.mapPos, vec(0, 0), 0);
+	}
+
+	var shortestPath = [];
+	function updateAi(entity) {
+		if ((roundStart === 0) || ((Time.now() - roundStart) < 0.5)) { return; }
+		var forceStart = false;
+
+		if (veq(entity.dir, vec(0, 0))) {
+			setPath(entity);
+			forceStart = true;
+		}
+
+		if (shortestPath.length < 2) { return; }
 
 		var next = shortestPath[0];
 
 		var pos = MapLogic.getCellCoords(entity.mapPos);
 		if (veq(pos, next)) {
-			var dir = vsub(shortestPath[1], next);
+			var progress = MapLogic.getProgress(entity.mapPos, entity.dir);
+//			if (!forceStart && (progress < -0.4)) { return; }
+
+			var dir = vnorm(vsub(shortestPath[1], next));
 			playerLogic.handleInput(map, entity, dir);
 
 			if (roundStart === 0) {
@@ -99,6 +174,8 @@ var MainScreen = function(map, playerCount) {
 		if (aiPlayer) {
 			updateAi(aiPlayer);
 		}
+
+		collidePlayers(players);
 
 		if (roundStart > 0) {
 			timeText.text.message = (Time.now() - roundStart).toFixed(2);

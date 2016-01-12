@@ -51,3 +51,7 @@ function veq(v1, v2) {
 function vdot(v1, v2) {
 	return v1.x * v2.x + v1.y * v2.y;
 }
+
+function vdist(v1, v2) {
+	return vlen(vsub(v2, v1));
+}
