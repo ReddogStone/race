@@ -11,6 +11,22 @@ var RootScreen = function() {
 		"     0--0--0                 ",
 	];
 
+	var map = [
+		"Y---------0-----------------0",
+		"          0---------0-0     |",
+		"                    | |     |",
+		"                    | |     |",
+		"                    | |     |",
+		"  ---0              | |     |",
+		"  0--0              | 0-----0",
+		"  |  |              0-------0",
+		"X-0--0----------------------0",
+	];
+
+	var start = Time.now();
+	var path = PathFinding.shortest(map, MapLogic.getStart(map), vec(0, 0), 0);
+	console.log('Pathfinding: ' + (Time.now() - start));
+
 	return Screen.run(function*() {
 		yield LoadingScreen();
 		

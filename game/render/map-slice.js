@@ -13,7 +13,7 @@ var MapSlice = (function() {
 		context.fillRect(-0.5 - off, -0.5 - off, 1 + 2 * off, 1 + 2 * off);
 	}
 
-	function renderCrossing(context, map, x, y) {
+	function renderRoad(context, map, x, y) {
 		var left = map[y][x - 1];
 		var right = map[y][x + 1];
 		var top = (map[y - 1] || '')[x];
@@ -39,28 +39,16 @@ var MapSlice = (function() {
 	function renderCell(context, cellValue, x, y, map) {
 		renderBackgroundCell(context);
 
-		switch (cellValue) {
-			case '0':
-			case 'X':
-			case 'Y':
-				renderCrossing(context, map, x, y);
-				break;
-			case '-':
-				context.fillStyle = MAP_STYLE.road;
-				fillRect(context, 0, 0, 1, ROAD_SIZE);
-				break;
-			case '|':
-				context.fillStyle = MAP_STYLE.road;
-				fillRect(context, 0, 0, ROAD_SIZE, 1);
-				break;
+		if (cellValue && (cellValue !== ' ')) {
+			renderRoad(context, map, x, y);
 		}
 	}
 
 	return {
-		render: function(context, map) {
+		render: function(context, map, left, top, right, bottom) {
 			var mapSx = map[0].length;
 			var mapSy = map.length;
-			renderMap(context, map, -10, -10, mapSx + 20, mapSy + 20, renderCell);
+			renderMap(context, map, left, top, right, bottom, renderCell);
 		}
 	};
 })();

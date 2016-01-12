@@ -15,7 +15,8 @@ var MapView = (function() {
 			Camera.viewport(context, viewport.x, viewport.y, viewport.sx, viewport.sy, function(context) {
 				renderTranslated(context, offset.x, offset.y, function(context) {
 					Camera.transform(context, mainPlayer.mapPos, 0, MAP_CELL_SIZE, function(context) {
-						MapSlice.render(context, map);
+						var mapSize = MapLogic.getSize(map);
+						MapSlice.render(context, map, -10, -10, mapSize.x + 10, mapSize.y + 10);
 
 						players.forEach(function(player) {
 							var anchor = player.anchor;

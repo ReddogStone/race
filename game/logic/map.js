@@ -13,14 +13,21 @@ var MapLogic = (function() {
 		return isCrossing(value) || ((dir.x !== 0) && (value === '-')) || ((dir.y !== 0) && (value === '|'));
 	}
 
+	function search(map, value) {
+		for (var y = 0; y < map.length; y++) {
+			var x = map[y].indexOf(value);
+			if (x >= 0) {
+				return vec(x, y);
+			}
+		}
+	}
+
 	return {
 		getStart: function(map) {
-			for (var y = 0; y < map.length; y++) {
-				var x = map[y].indexOf('X');
-				if (x >= 0) {
-					return vec(x, y);
-				}
-			}
+			return search(map, 'X');
+		},
+		getFinish: function(map) {
+			return search(map, 'Y');
 		},
 		getCell: getCell,
 		getCellCoords: function(pos) {
@@ -30,6 +37,9 @@ var MapLogic = (function() {
 			var current = getCell(map, pos);
 			var target = getCell(map, vadd(pos, dir));
 			return target && canTravel(current, dir) && canTravel(target, dir);
+		},
+		getSize: function(map) {
+			return vec(map[0].length, map.length);
 		}
 	};
 })();

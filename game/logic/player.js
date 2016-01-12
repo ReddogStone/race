@@ -4,6 +4,8 @@ var PlayerLogic = function(behaviorSystem) {
 	}
 
 	function turn(player, newRotation) {
+		console.log(player.rotation, newRotation);
+
 		if (player.cancelToMiddle) {
 			player.cancelToMiddle();
 		}
@@ -11,7 +13,11 @@ var PlayerLogic = function(behaviorSystem) {
 		var rot = player.rotation;
 
 		if (Math.abs(newRotation - rot) > Math.PI) {
-			rot -= 2 * Math.PI;
+			if (rot < 0) {
+				rot += 2 * Math.PI;
+			} else {
+				rot -= 2 * Math.PI;
+			}
 		}
 		behaviorSystem.add(Behavior.interval(TURN_TIME, function(progress) {
 			player.rotation = lerp(rot, newRotation, progress);
@@ -58,7 +64,6 @@ var PlayerLogic = function(behaviorSystem) {
 
 			var dir = player.dir;
 			var mapPos = player.mapPos;
-			var targetCell = MapLogic.getCell(map, vadd(mapPos, dir));
 
 			var px = (mapPos.x % 1);
 			var py = (mapPos.y % 1);
@@ -67,7 +72,7 @@ var PlayerLogic = function(behaviorSystem) {
 			px *= 2;
 			py *= 2;
 			var progress = dir.x * px + dir.y * py;
-			if ((!targetCell || targetCell === ' ') && (progress > MAP_ROAD_SIZE / MAP_CELL_SIZE)) {
+			if (!MapLogic.canGo(map, mapPos, dir) && (progress > MAP_ROAD_SIZE / MAP_CELL_SIZE)) {
 				toMiddle(player, 1);
 
 				player.burnedPos = null;

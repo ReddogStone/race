@@ -66,6 +66,27 @@ var MainScreen = function(map, playerCount) {
 		gameEnded = true;
 	}
 
+	var shortestPath = PathFinding.shortest(map, startPos, vec(0, 0), 0);
+	function updateAi(entity) {
+		if (shortestPath.length < 2) {
+			return;
+		}
+
+		var next = shortestPath[0];
+
+		var pos = MapLogic.getCellCoords(entity.mapPos);
+		if (veq(pos, next)) {
+			var dir = vsub(shortestPath[1], next);
+			playerLogic.handleInput(map, entity, dir);
+
+			if (roundStart === 0) {
+				roundStart = Time.now();
+			}
+
+			shortestPath.shift();
+		}
+	}
+
 	function update(dt) {
 		players.forEach(function(player) {
 			var finished = playerLogic.update(map, player, dt);
@@ -73,6 +94,10 @@ var MainScreen = function(map, playerCount) {
 				win(player);
 			}
 		});
+
+		if (aiPlayer) {
+			updateAi(aiPlayer);
+		}
 
 		if (roundStart > 0) {
 			timeText.text.message = (Time.now() - roundStart).toFixed(2);
@@ -108,7 +133,9 @@ var MainScreen = function(map, playerCount) {
 		makePlayer('RED', PLAYER2_STYLE)
 	];
 
-	players = players.slice(0, playerCount);
+//	players = players.slice(0, playerCount);
+
+	var aiPlayer = players[playerCount];
 
 	var sceneDescriptions = [
 		{
