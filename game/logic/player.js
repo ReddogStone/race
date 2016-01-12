@@ -4,8 +4,6 @@ var PlayerLogic = function(behaviorSystem) {
 	}
 
 	function turn(player, newRotation) {
-		console.log(player.rotation, newRotation);
-
 		if (player.cancelToMiddle) {
 			player.cancelToMiddle();
 		}

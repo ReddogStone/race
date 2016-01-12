@@ -9,6 +9,7 @@ var MainScreen = function(map, playerCount) {
 	});
 
 	var playerLogic = PlayerLogic(behaviorSystem);
+	var miniMapView = MiniMapView(map);
 
 	var winRect = entities.add({
 		pos: vec(640, 150),
@@ -181,8 +182,13 @@ var MainScreen = function(map, playerCount) {
 		var prioritizedPlayers = players.slice();
 		prioritizedPlayers.push(prioritizedPlayers.splice(mainPlayerIndex, 1)[0]);
 
+		FrameProfiler.start('MapView');
 		MapView.render(context, map, vp, prioritizedPlayers, off);
-		MiniMapView.render(context, map, prioritizedPlayers, moff);
+		FrameProfiler.stop();
+
+		FrameProfiler.start('MiniMapView');
+		miniMapView.render(context, prioritizedPlayers, moff);
+		FrameProfiler.stop();
 	}
 
 	return function(event) {

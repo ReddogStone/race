@@ -12,11 +12,20 @@ var MapView = (function() {
 		render: function(context, map, viewport, players, offset) {
 			var mainPlayer = players[players.length - 1];
 
+			var delta = vscale(vsub(offset, viewport), 1 / MAP_CELL_SIZE);
+			var topLeft = vsub(mainPlayer.mapPos, delta);
+			var bottomRight = vadd(mainPlayer.mapPos, delta);
+
+			var left = Math.floor(topLeft.x);
+			var top = Math.floor(topLeft.y);
+			var right = Math.ceil(bottomRight.x) + 1;
+			var bottom = Math.ceil(bottomRight.y) + 1;
+
 			CameraRenderer.viewport(context, viewport.x, viewport.y, viewport.sx, viewport.sy, function(context) {
 				renderTranslated(context, offset.x, offset.y, function(context) {
 					CameraRenderer.transform(context, mainPlayer.mapPos, 0, MAP_CELL_SIZE, function(context) {
 						var mapSize = MapLogic.getSize(map);
-						MapSlice.render(context, map, -10, -10, mapSize.x + 10, mapSize.y + 10);
+						MapSlice.render(context, map, left, top, right, bottom);
 
 						players.forEach(function(player) {
 							var anchor = player.anchor;
