@@ -150,7 +150,7 @@ var MainScreen = function(map, playerCount) {
 		var pos = MapLogic.getCellCoords(entity.mapPos);
 		if (veq(pos, next)) {
 			var progress = MapLogic.getProgress(entity.mapPos, entity.dir);
-//			if (!forceStart && (progress < -0.4)) { return; }
+			if (!forceStart && (progress < -0.8)) { return; }
 
 			var dir = vnorm(vsub(shortestPath[1], next));
 			playerLogic.handleInput(map, entity, dir);
