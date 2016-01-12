@@ -2,7 +2,7 @@ var MiniMapView = (function() {
 	return {
 		render: function(context, map, players, offset) {
 			renderTranslated(context, offset.x, offset.y, function(context) { 
-				Camera.transform(context, vec(0, 0), 0, MINIMAP_CELL_SIZE, function(context) {
+				CameraRenderer.transform(context, vec(0, 0), 0, MINIMAP_CELL_SIZE, function(context) {
 					renderTranslated(context, 1.5, 1.5, function(context) { 
 						MiniMapRenderer.render(context, map);
 

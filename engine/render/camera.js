@@ -1,4 +1,4 @@
-var Camera = (function() {
+var CameraRenderer = (function() {
 	return {
 		viewport: function(context, x, y, sx, sy, render) {
 			context.save();
