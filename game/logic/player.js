@@ -43,6 +43,44 @@ var PlayerLogic = function(behaviorSystem) {
 		toMiddle(player, 1);
 	}
 
+	function move(player, dt) {
+		var delta = vscale(player.dir, dt * (PLAYER_BASE_SPEED + PLAYER_SPEED_SCALE * player.speed));
+		player.mapPos = vadd(player.mapPos, delta);
+	}
+
+	function checkWin(map, player) {
+		var value = MapLogic.getCell(map, player.mapPos);
+		return (value === 'Y');
+	}
+
+	function collideWithWalls(map, player) {
+		var dir = player.dir;
+		var mapPos = player.mapPos;
+
+		var px = (mapPos.x % 1);
+		var py = (mapPos.y % 1);
+		if (px > 0.5) { px -= 1; }
+		if (py > 0.5) { py -= 1; }
+		px *= 2;
+		py *= 2;
+		var progress = dir.x * px + dir.y * py;
+		if (!MapLogic.canGo(map, mapPos, dir) && (progress > MAP_ROAD_SIZE / MAP_CELL_SIZE)) {
+			toMiddle(player, 1);
+
+			player.burnedPos = null;
+
+			player.dir = vec(0, 0);
+			player.speed = 0;
+		}
+	}
+
+	function handleBurnedPos(player) {
+		var pos = MapLogic.getCellCoords(player.mapPos);
+		if (player.burnedPos && !veq(pos, player.burnedPos)) {
+			player.burnedPos = null;
+		}
+	}
+
 	return {
 		init: function(player, initialPos) {
 			player.mapPos = vclone(initialPos);
@@ -51,41 +89,15 @@ var PlayerLogic = function(behaviorSystem) {
 			player.dir = vec(0, 0);
 		},
 		update: function(map, player, dt) {
-			var delta = vscale(player.dir, dt * (PLAYER_BASE_SPEED + PLAYER_SPEED_SCALE * player.speed));
-			player.mapPos = vadd(player.mapPos, delta);
+			move(player, dt);
 
-			var value = MapLogic.getCell(map, player.mapPos);
-			if (value === 'Y') {
+			if (checkWin(map, player)) {
 				onWin(player);
 				return true;
 			}
 
-			var dir = player.dir;
-			var mapPos = player.mapPos;
-
-			var px = (mapPos.x % 1);
-			var py = (mapPos.y % 1);
-			if (px > 0.5) { px -= 1; }
-			if (py > 0.5) { py -= 1; }
-			px *= 2;
-			py *= 2;
-			var progress = dir.x * px + dir.y * py;
-			if (!MapLogic.canGo(map, mapPos, dir) && (progress > MAP_ROAD_SIZE / MAP_CELL_SIZE)) {
-				toMiddle(player, 1);
-
-				player.burnedPos = null;
-
-				player.dir = vec(0, 0);
-				player.speed = 0;
-			}
-
-			var pos = vclone(player.mapPos);
-			pos.x = Math.round(pos.x);
-			pos.y = Math.round(pos.y);
-
-			if (player.burnedPos && !veq(pos, player.burnedPos)) {
-				player.burnedPos = null;
-			}
+			collideWithWalls(map, player);
+			handleBurnedPos(player);
 
 			return false;
 		},		
