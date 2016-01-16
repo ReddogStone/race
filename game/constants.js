@@ -40,6 +40,17 @@ var WIN_BG_STYLE = {
 	lineWidth: 5
 };
 
+var KEY_DISPLAY_STYLE = {
+	fill: '#FFFFFF',
+	stroke: '#606060',
+	lineWidth: 5,
+	size: 50,
+	margin: 10,
+	textSize: 30
+};
+
+var MAIN_FONT = 'Consolas';
+
 var MINIMAP_CELL_SIZE = 15;
 var MAP_CELL_SIZE = 400;
 var MAP_ROAD_SIZE = 200;

@@ -90,9 +90,36 @@ var MainScreen = function(map, playerCount) {
 	function handleKeyDown(key) {
 		var action = KEY_MAP[key];
 		if (action) {
-			return playerLogic.handleInput(map, action.player, action.dir);
+			return playerLogic.handleInput(map, players[action.index], Dirs[action.dir]);
 		}
 	}
+
+	var Dirs = {
+		LEFT: vec(-1, 0),
+		UP: vec(0, -1),
+		RIGHT: vec(1, 0),
+		DOWN: vec(0, 1)
+	};
+
+	var KEY_MAP = {
+		// left, up, right, down
+		37: { index: 1, dir: 'LEFT' },
+		38: { index: 1, dir: 'UP' },
+		39: { index: 1, dir: 'RIGHT' },
+		40: { index: 1, dir: 'DOWN' },
+
+		// a, w, d, s
+		65: { index: 0, dir: 'LEFT' },
+		87: { index: 0, dir: 'UP' },
+		68: { index: 0, dir: 'RIGHT' },
+		83: { index: 0, dir: 'DOWN' }
+	};
+
+	var inputDisplay = {
+		highlighted: [],
+		offset: 0.4,
+		scale: 1
+	};
 
 	var round = Behavior.run(function*() {
 		yield Behavior.filter(function(event) {
@@ -155,20 +182,6 @@ var MainScreen = function(map, playerCount) {
 		sceneDescriptions[0].miniMapOffset.x += 0.5;
 	}
 
-	var KEY_MAP = {
-		// left, up, right, down
-		37: { player: players[1], dir: vec(-1, 0) },
-		38: { player: players[1], dir: vec(0, -1) },
-		39: { player: players[1], dir: vec(1, 0) },
-		40: { player: players[1], dir: vec(0, 1) },
-
-		// a, w, d, s
-		65: { player: players[0], dir: vec(-1, 0) },
-		87: { player: players[0], dir: vec(0, -1) },
-		68: { player: players[0], dir: vec(1, 0) },
-		83: { player: players[0], dir: vec(0, 1) }
-	};
-
 	function renderPlayerScene(context, map, players, mainPlayerIndex, description) {
 		var canvas = context.canvas;
 
@@ -183,6 +196,8 @@ var MainScreen = function(map, playerCount) {
 		FrameProfiler.start('MapView');
 		MapView.render(context, map, vp, prioritizedPlayers, off);
 		FrameProfiler.stop();
+
+		InputDisplay.render(context, vadd(off, vec(0, canvas.height * inputDisplay.offset)), inputDisplay, KEY_MAP, mainPlayerIndex);
 
 		FrameProfiler.start('MiniMapView');
 		miniMapView.render(context, prioritizedPlayers, moff);
