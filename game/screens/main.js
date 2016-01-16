@@ -107,10 +107,7 @@ var MainScreen = function(map, playerCount) {
 
 		win(winningPlayer);
 
-		var input = '';
-		while (['keydown', 'mousedown'].indexOf(input.type) < 0) {
-			input = yield Behavior.input();
-		}
+		yield Behavior.first(Behavior.type('keydown'), Behavior.type('mousedown'));
 		return {};
 	})
 
