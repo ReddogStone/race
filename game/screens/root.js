@@ -31,7 +31,7 @@ var RootScreen = function() {
 		yield LoadingScreen();
 		
 		while (true) {
-			yield TitleScreen();
+			// yield TitleScreen();
 
 			while (true) {
 				yield MainScreen(map, 1);

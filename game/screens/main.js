@@ -9,6 +9,7 @@ var MainScreen = function(map, playerCount) {
 	});
 
 	var playerLogic = PlayerLogic(behaviorSystem);
+	var aiSystem = AiSystem(playerLogic);
 	var miniMapView = MiniMapView(map);
 
 	var winRect = entities.add({
@@ -117,52 +118,6 @@ var MainScreen = function(map, playerCount) {
 		});
 	}
 
-	function setPath(entity) {
-		shortestPath = [
-			startPos,
-			vec(3, 4),
-			vec(3, 1),
-			vec(7, 1),
-			vec(7, 4),
-			vec(7, 7),
-			vec(11, 7),
-			vec(11, 4),
-			vec(20, 4),
-		];
-
-		shortestPath = PathFinding.shortest(map, entity.mapPos, vec(0, 0), 0);
-	}
-
-	var shortestPath = [];
-	function updateAi(entity) {
-		if ((roundStart === 0) || ((Time.now() - roundStart) < 0.5)) { return; }
-		var forceStart = false;
-
-		if (veq(entity.dir, vec(0, 0))) {
-			setPath(entity);
-			forceStart = true;
-		}
-
-		if (shortestPath.length < 2) { return; }
-
-		var next = shortestPath[0];
-
-		var pos = MapLogic.getCellCoords(entity.mapPos);
-		if (veq(pos, next)) {
-			var progress = MapLogic.getProgress(entity.mapPos, entity.dir);
-			if (!forceStart && (progress < -0.8)) { return; }
-
-			var dir = vnorm(vsub(shortestPath[1], next));
-			playerLogic.handleInput(map, entity, dir);
-
-			if (roundStart === 0) {
-				roundStart = Time.now();
-			}
-
-			shortestPath.shift();
-		}
-	}
-
 	function update(dt) {
 		players.forEach(function(player) {
 			var finished = playerLogic.update(map, player, dt);
@@ -172,7 +127,7 @@ var MainScreen = function(map, playerCount) {
 		});
 
 		if (aiPlayer) {
-			updateAi(aiPlayer);
+			aiSystem.update(map, aiPlayer, roundStart);
 		}
 
 		collidePlayers(players);
@@ -278,9 +233,6 @@ var MainScreen = function(map, playerCount) {
 				if (!gameEnded) {
 					update(event.dt);
 				}
-
-				RelativeSystem.update(entities);
-
 				break;
 
 			case 'show':
