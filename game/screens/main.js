@@ -116,16 +116,24 @@ var MainScreen = function(map, playerCount) {
 	};
 
 	var inputDisplay = {
-		highlighted: [],
+		highlighted: {},
 		offset: 0.4,
 		scale: 1
 	};
 
 	var round = Behavior.run(function*() {
+		for (var dir in Dirs) {
+			if (MapLogic.canGo(map, startPos, Dirs[dir])) {
+				inputDisplay.highlighted[dir] = true;
+			}
+		}
+
 		yield Behavior.filter(function(event) {
 			return (event.type === 'keydown') && handleKeyDown(event.keyCode);
 		});
 		roundStart = Time.now();
+
+		inputDisplay.highlighted = {};
 
 		var winningPlayer = yield Behavior.first(
 			Behavior.update(update),

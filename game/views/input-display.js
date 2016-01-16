@@ -30,10 +30,11 @@ var InputDisplay = (function() {
 					}
 
 					var label = LABELS[keyCode];
-					var off = OFFSETS[keyDesc.dir];
+					var dir = keyDesc.dir;
+					var off = OFFSETS[dir];
 
 					renderTranslated(context, off.x * step, off.y * step, function(context) {
-						KeyDisplay.render(context, label);
+						KeyDisplay.render(context, label, inputDisplay.highlighted[dir]);
 					});
 				}
 			});

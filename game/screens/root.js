@@ -14,8 +14,8 @@ var RootScreen = function() {
 	var map = [
 		"        0-----0              ",
 		"        |  0--0              ",
-		"    0---0  0--------0        ",
-		"    |               |        ",
+		"0---0---0  0--------0        ",
+		"|   |               |        ",
 		"X---0-------0       0-------Y",
 		"    |       |       |        ",
 		"    |0-0    0----0  0        ",
@@ -34,7 +34,7 @@ var RootScreen = function() {
 			// yield TitleScreen();
 
 			while (true) {
-				yield MainScreen(map, 2);
+				yield MainScreen(map, 1);
 			}
 		}
 	});

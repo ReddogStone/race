@@ -42,6 +42,7 @@ var WIN_BG_STYLE = {
 
 var KEY_DISPLAY_STYLE = {
 	fill: '#FFFFFF',
+	highlighted: '#FF0000',
 	stroke: '#606060',
 	lineWidth: 5,
 	size: 50,
