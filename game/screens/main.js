@@ -83,7 +83,7 @@ var MainScreen = function(map, playerCount) {
 
 
 		playerCollision.update(players);
-		
+
 		if (roundStart > 0) {
 			timeText.text.message = (Time.now() - roundStart).toFixed(2);
 		}
@@ -98,6 +98,18 @@ var MainScreen = function(map, playerCount) {
 			}
 		}
 	}
+
+	var mainBehavior = Behavior.run(function*() {
+		yield Behavior.first(
+			Behavior.forever(behaviorSystem.update),
+			Behavior.run(function*() {
+				yield Behavior.first(
+					Behavior.update(update),
+					Behavior.forever(function(event) { keyDown(event.keyCode); })
+				)
+			})
+		);
+	});
 
 	function makePlayer(name, style) {
 		var result = {
@@ -117,8 +129,6 @@ var MainScreen = function(map, playerCount) {
 		makePlayer('GREEN', PLAYER_STYLE),
 		makePlayer('RED', PLAYER2_STYLE)
 	];
-
-//	players = players.slice(0, playerCount);
 
 	var aiPlayer = players[playerCount];
 
@@ -177,33 +187,15 @@ var MainScreen = function(map, playerCount) {
 
 	return function(event) {
 		if (event.type !== 'show') {
-			behaviorSystem.update(event);
-		}
+			mainBehavior(event);
+		} else {
+			var context = event.context;
 
-		switch (event.type) {
-			case 'update':
-				if (!gameEnded) {
-					update(event.dt);
-				}
-				break;
+			for (var i = 0; i < playerCount; i++) {
+				renderPlayerScene(context, map, players, i, sceneDescriptions[i]);
+			}
 
-			case 'show':
-				var context = event.context;
-
-				for (var i = 0; i < playerCount; i++) {
-					renderPlayerScene(context, map, players, i, sceneDescriptions[i]);
-				}
-
-				renderSystem.show(context, entities);
-				break;
-
-			case 'keydown':
-				if (gameEnded) {
-					return {};
-				}
-
-				keyDown(event.keyCode);
-				break;
+			renderSystem.show(context, entities);
 		}
 	};
 }

@@ -68,6 +68,25 @@ var Behavior = (function() {
 				return { done: false };
 			};
 		},
+		update: function(func) {
+			return function(event) {
+				if (event.type !== 'update') {
+					return { done: false };
+				}
+				var result = func(event.dt);
+				if (result) {
+					return { done: true, value: result };
+				}
+
+				return { done: false };
+			};
+		},
+		forever: function(func) {
+			return function(event) {
+				func(event);
+				return { done: false };
+			};
+		},
 		input: function() {
 			return function(event) {
 				if (event.type !== 'update') {
