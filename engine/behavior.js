@@ -39,6 +39,15 @@ var Behavior = (function() {
 
 			return result;
 		};
+	}
+
+	function filter(func) {
+		return function(event) {
+			if (!func(event)) {
+				return { done: false };
+			}
+			return { done: true, value: event };
+		};
 	}	
 
 	return {
@@ -81,6 +90,20 @@ var Behavior = (function() {
 				return { done: false };
 			};
 		},
+		waitFor: function(func) {
+			return function(event) {
+				return { done: func(event) };
+			};
+		},
+		type: function(type) {
+			return function(event) {
+				if (event.type !== type) {
+					return { done: false };
+				}
+				return { done: true, value: event };
+			};
+		},
+		filter: filter,
 		forever: function(func) {
 			return function(event) {
 				func(event);

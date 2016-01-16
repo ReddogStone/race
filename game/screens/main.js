@@ -87,20 +87,22 @@ var MainScreen = function(map, playerCount) {
 		}
 	}
 
-	function keyDown(key) {
+	function handleKeyDown(key) {
 		var action = KEY_MAP[key];
 		if (action) {
-			var handled = playerLogic.handleInput(map, action.player, action.dir);
-			if ((roundStart === 0) && handled) {
-				roundStart = Time.now();
-			}
+			return playerLogic.handleInput(map, action.player, action.dir);
 		}
 	}
 
 	var round = Behavior.run(function*() {
+		yield Behavior.filter(function(event) {
+			return (event.type === 'keydown') && handleKeyDown(event.keyCode);
+		});
+		roundStart = Time.now();
+
 		var winningPlayer = yield Behavior.first(
 			Behavior.update(update),
-			Behavior.forever(function(event) { keyDown(event.keyCode); })
+			Behavior.forever(function(event) { handleKeyDown(event.keyCode); })
 		)
 
 		win(winningPlayer);
