@@ -65,22 +65,20 @@ var MainScreen = function(map, playerCount) {
 			winRect.rect.height = progress * bgh;
 			winRect.alpha = progress;
 		}));
-
-		gameEnded = true;
 	}
 
 	function update(dt) {
-		players.forEach(function(player) {
+		for (var i = 0; i < players.length; i++) {
+			var player = players[i];
 			var finished = playerLogic.update(map, player, dt);
 			if (finished) {
-				win(player);
-			}
-		});
+				return player;
+			}			
+		}
 
 		if (aiPlayer) {
 			aiSystem.update(map, aiPlayer, roundStart);
 		}
-
 
 		playerCollision.update(players);
 
@@ -99,17 +97,25 @@ var MainScreen = function(map, playerCount) {
 		}
 	}
 
-	var mainBehavior = Behavior.run(function*() {
-		yield Behavior.first(
-			Behavior.forever(behaviorSystem.update),
-			Behavior.run(function*() {
-				yield Behavior.first(
-					Behavior.update(update),
-					Behavior.forever(function(event) { keyDown(event.keyCode); })
-				)
-			})
-		);
-	});
+	var round = Behavior.run(function*() {
+		var winningPlayer = yield Behavior.first(
+			Behavior.update(update),
+			Behavior.forever(function(event) { keyDown(event.keyCode); })
+		)
+
+		win(winningPlayer);
+
+		var input = '';
+		while (['keydown', 'mousedown'].indexOf(input.type) < 0) {
+			input = yield Behavior.input();
+		}
+		return {};
+	})
+
+	var mainBehavior = Behavior.first(
+		Behavior.forever(behaviorSystem.update),
+		round
+	);
 
 	function makePlayer(name, style) {
 		var result = {
@@ -122,7 +128,6 @@ var MainScreen = function(map, playerCount) {
 		return result;
 	}
 
-	var gameEnded = false;
 	var roundStart = 0;
 
 	var players = [
@@ -187,7 +192,10 @@ var MainScreen = function(map, playerCount) {
 
 	return function(event) {
 		if (event.type !== 'show') {
-			mainBehavior(event);
+			var result = mainBehavior(event);
+			if (result.done) {
+				return result.value;
+			}
 		} else {
 			var context = event.context;
 
