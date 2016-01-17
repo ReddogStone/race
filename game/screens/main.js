@@ -49,6 +49,50 @@ var MainScreen = function(map, playerCount) {
 
 	var startPos = MapLogic.getStart(map);
 
+	var Dirs = {
+		LEFT: vec(-1, 0),
+		UP: vec(0, -1),
+		RIGHT: vec(1, 0),
+		DOWN: vec(0, 1)
+	};
+
+	var KEY_MAP = {
+		// left, up, right, down
+		37: { index: 1, dir: 'LEFT' },
+		38: { index: 1, dir: 'UP' },
+		39: { index: 1, dir: 'RIGHT' },
+		40: { index: 1, dir: 'DOWN' },
+
+		// a, w, d, s
+		65: { index: 0, dir: 'LEFT' },
+		87: { index: 0, dir: 'UP' },
+		68: { index: 0, dir: 'RIGHT' },
+		83: { index: 0, dir: 'DOWN' }
+	};
+
+	function makePlayer(name, style, index) {
+		var result = {
+			name: name,
+			rotation: 0,
+			anchor: vec(0.9, 0.5),
+			style: style
+		};
+		playerLogic.init(result, startPos);
+
+		result.inputDisplay = InputDisplay(KEY_MAP, index);
+
+		return result;
+	}
+
+	var roundStart = 0;
+
+	var players = [
+		makePlayer('GREEN', PLAYER_STYLE, 0),
+		makePlayer('RED', PLAYER2_STYLE, 1)
+	];
+
+	var aiPlayer = players[playerCount];
+
 	function win(entity) {
 		var time = Time.now() - roundStart;
 
@@ -94,44 +138,39 @@ var MainScreen = function(map, playerCount) {
 		}
 	}
 
-	var Dirs = {
-		LEFT: vec(-1, 0),
-		UP: vec(0, -1),
-		RIGHT: vec(1, 0),
-		DOWN: vec(0, 1)
-	};
-
-	var KEY_MAP = {
-		// left, up, right, down
-		37: { index: 1, dir: 'LEFT' },
-		38: { index: 1, dir: 'UP' },
-		39: { index: 1, dir: 'RIGHT' },
-		40: { index: 1, dir: 'DOWN' },
-
-		// a, w, d, s
-		65: { index: 0, dir: 'LEFT' },
-		87: { index: 0, dir: 'UP' },
-		68: { index: 0, dir: 'RIGHT' },
-		83: { index: 0, dir: 'DOWN' }
-	};
-
-	var inputDisplay = InputDisplay(KEY_MAP, 0);
-	var highlightedInputs = {};
-	var inputDisplayScale = 1;
-
-	var round = Behavior.run(function*() {
+	function highlightStartDirs() {
 		for (var dir in Dirs) {
 			if (MapLogic.canGo(map, startPos, Dirs[dir])) {
-				highlightedInputs[dir] = true;
+				players.forEach(function(player) {
+					player.inputDisplay.highlight(dir);
+				});
 			}
 		}
+	}
 
+	function clearHighlights() {
+		players.forEach(function(player) {
+			player.inputDisplay.clearHighlights();
+		});
+	}
+
+	function scaleInputDisplays(value) {
+		players.forEach(function(player) {
+			player.inputDisplay.scale = value;
+		});
+	}
+
+	var round = Behavior.run(function*() {
+		highlightStartDirs();
 		yield Behavior.filter(function(event) {
 			return (event.type === 'keydown') && handleKeyDown(event.keyCode);
 		});
 		roundStart = Time.now();
 
-		highlightedInputs = {};
+		clearHighlights();
+		behaviorSystem.add(Behavior.interval(0.5, function(progress) {
+			scaleInputDisplays(lerp(1, 0.6, progress));
+		}));
 
 		var winningPlayer = yield Behavior.first(
 			Behavior.update(update),
@@ -148,29 +187,6 @@ var MainScreen = function(map, playerCount) {
 		Behavior.forever(behaviorSystem.update),
 		round
 	);
-
-	function makePlayer(name, style, index) {
-		var result = {
-			name: name,
-			rotation: 0,
-			anchor: vec(0.9, 0.5),
-			style: style
-		};
-		playerLogic.init(result, startPos);
-
-		result.inputDisplay = InputDisplay(KEY_MAP, index);
-
-		return result;
-	}
-
-	var roundStart = 0;
-
-	var players = [
-		makePlayer('GREEN', PLAYER_STYLE, 0),
-		makePlayer('RED', PLAYER2_STYLE, 1)
-	];
-
-	var aiPlayer = players[playerCount];
 
 	var sceneDescriptions = [
 		{
@@ -207,9 +223,9 @@ var MainScreen = function(map, playerCount) {
 		FrameProfiler.stop();
 
 		var player = players[mainPlayerIndex];
-		var inputDisplaySize = player.inputDisplay.size(inputDisplayScale);
+		var inputDisplaySize = player.inputDisplay.size();
 		renderPivotTransformed(context, off.x, canvas.height - 50, 0, 1, inputDisplaySize.x * 0.5, inputDisplaySize.y, function(context) {
-			player.inputDisplay.render(context, inputDisplayScale, highlightedInputs);
+			player.inputDisplay.render(context);
 		});
 
 		FrameProfiler.start('MiniMapView');

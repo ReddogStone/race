@@ -18,6 +18,9 @@ var InputDisplay = function(keyMap, playerIndex) {
 		83: 'S'
 	};
 
+	var scale = 1;
+	var highlighted = {};
+
 	var elements = Object.keys(keyMap).filter(function(keyCode) {
 		return keyMap[keyCode].index === playerIndex;
 	}).map(function(keyCode) {
@@ -30,12 +33,12 @@ var InputDisplay = function(keyMap, playerIndex) {
 	});
 
 	return {
-		size: function(scale) {
+		size: function() {
 			var size = KEY_DISPLAY_STYLE.size * scale;
 			var margin = KEY_DISPLAY_STYLE.margin;
 			return vec(3 * size + 2 * margin, 2 * size + margin);
 		},
-		render: function(context, scale, highlighted) {
+		render: function(context) {
 			var size = KEY_DISPLAY_STYLE.size * scale;
 			var step = size + KEY_DISPLAY_STYLE.margin;
 
@@ -44,6 +47,15 @@ var InputDisplay = function(keyMap, playerIndex) {
 					KeyDisplay.render(context, element.label, size, highlighted[element.dir]);
 				});
 			});
+		},
+		highlight: function(dir) {
+			highlighted[dir] = true;
+		},
+		clearHighlights: function() {
+			highlighted = {};
+		},
+		set scale(value) {
+			scale = value;
 		}
 	};
 };
