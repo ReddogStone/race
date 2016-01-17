@@ -34,7 +34,8 @@ var MapView = (function() {
 
 							renderTransformed(context, mapPos.x, mapPos.y, rotation, 1, function(context) {
 								if (player === mainPlayer) {
-									var speedPercentage = Math.min((player.speed + 1) / MAX_PLAYER_SPEED, 1.0);
+									var speed = player.shownSpeed || 0;
+									var speedPercentage = Math.min(speed / MAX_PLAYER_SPEED, 1.0);
 									PlayerRenderer.withSpeedBar(context, anchor.x, anchor.y, player.style, speedPercentage);
 								} else {
 									PlayerRenderer.forMap(context, anchor.x, anchor.y, player.style);

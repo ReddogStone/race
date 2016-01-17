@@ -1,6 +1,7 @@
 var PlayerLogic = function(behaviorSystem) {
 	function increaseSpeed(player) {
-		var newSpeed = Math.min(player.speed + 1, PLAYER_BASE_SPEED + MAX_PLAYER_SPEED * PLAYER_SPEED_SCALE);
+		var newSpeed = Math.min(player.speed + 1, MAX_PLAYER_SPEED);
+		player.shownSpeed = newSpeed;
 
 		behaviorSystem.add(Behavior.interval(TURN_TIME, function(progress) {
 			player.speed = progress * newSpeed;
@@ -21,15 +22,14 @@ var PlayerLogic = function(behaviorSystem) {
 				rot -= 2 * Math.PI;
 			}
 		}
-		behaviorSystem.add(Behavior.interval(TURN_TIME, function(progress) {
-			player.rotation = lerp(rot, newRotation, progress);
-		}));
 
 		var dim = (player.dir.x !== 0) ? 'y' : 'x';
 		var start = player.mapPos[dim];
 		var end = Math.round(start);
+
 		behaviorSystem.add(Behavior.interval(TURN_TIME, function(progress) {
 			player.mapPos[dim] = lerp(start, end, progress);
+			player.rotation = lerp(rot, newRotation, progress);
 		}));
 	}
 
