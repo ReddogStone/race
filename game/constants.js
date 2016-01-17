@@ -47,7 +47,7 @@ var KEY_DISPLAY_STYLE = {
 	lineWidth: 5,
 	size: 50,
 	margin: 10,
-	textSize: 30
+	relativeTextSize: 0.7
 };
 
 var MAIN_FONT = 'Consolas';

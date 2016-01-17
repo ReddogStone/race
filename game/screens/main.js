@@ -115,16 +115,14 @@ var MainScreen = function(map, playerCount) {
 		83: { index: 0, dir: 'DOWN' }
 	};
 
-	var inputDisplay = {
-		highlighted: {},
-		offset: 0.4,
-		scale: 1
-	};
+	var inputDisplay = InputDisplay(KEY_MAP, 0);
+	var highlightedInputs = {};
+	var inputDisplayScale = 1;
 
 	var round = Behavior.run(function*() {
 		for (var dir in Dirs) {
 			if (MapLogic.canGo(map, startPos, Dirs[dir])) {
-				inputDisplay.highlighted[dir] = true;
+				highlightedInputs[dir] = true;
 			}
 		}
 
@@ -133,7 +131,7 @@ var MainScreen = function(map, playerCount) {
 		});
 		roundStart = Time.now();
 
-		inputDisplay.highlighted = {};
+		highlightedInputs = {};
 
 		var winningPlayer = yield Behavior.first(
 			Behavior.update(update),
@@ -151,7 +149,7 @@ var MainScreen = function(map, playerCount) {
 		round
 	);
 
-	function makePlayer(name, style) {
+	function makePlayer(name, style, index) {
 		var result = {
 			name: name,
 			rotation: 0,
@@ -159,14 +157,17 @@ var MainScreen = function(map, playerCount) {
 			style: style
 		};
 		playerLogic.init(result, startPos);
+
+		result.inputDisplay = InputDisplay(KEY_MAP, index);
+
 		return result;
 	}
 
 	var roundStart = 0;
 
 	var players = [
-		makePlayer('GREEN', PLAYER_STYLE),
-		makePlayer('RED', PLAYER2_STYLE)
+		makePlayer('GREEN', PLAYER_STYLE, 0),
+		makePlayer('RED', PLAYER2_STYLE, 1)
 	];
 
 	var aiPlayer = players[playerCount];
@@ -205,7 +206,11 @@ var MainScreen = function(map, playerCount) {
 		MapView.render(context, map, vp, prioritizedPlayers, off);
 		FrameProfiler.stop();
 
-		InputDisplay.render(context, vadd(off, vec(0, canvas.height * inputDisplay.offset)), inputDisplay, KEY_MAP, mainPlayerIndex);
+		var player = players[mainPlayerIndex];
+		var inputDisplaySize = player.inputDisplay.size(inputDisplayScale);
+		renderPivotTransformed(context, off.x, canvas.height - 50, 0, 1, inputDisplaySize.x * 0.5, inputDisplaySize.y, function(context) {
+			player.inputDisplay.render(context, inputDisplayScale, highlightedInputs);
+		});
 
 		FrameProfiler.start('MiniMapView');
 		miniMapView.render(context, prioritizedPlayers, moff);

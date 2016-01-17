@@ -1,9 +1,9 @@
-var InputDisplay = (function() {
+var InputDisplay = function(keyMap, playerIndex) {
 	var OFFSETS = {
-		LEFT: vec(-1, 0),
-		UP: vec(0, -1),
-		RIGHT: vec(1, 0),
-		DOWN: vec(0, 0),
+		LEFT: vec(0, 1),
+		UP: vec(1, 0),
+		RIGHT: vec(2, 1),
+		DOWN: vec(1, 1),
 	};
 
 	var LABELS = {
@@ -18,26 +18,32 @@ var InputDisplay = (function() {
 		83: 'S'
 	};
 
+	var elements = Object.keys(keyMap).filter(function(keyCode) {
+		return keyMap[keyCode].index === playerIndex;
+	}).map(function(keyCode) {
+		var dir = keyMap[keyCode].dir;
+		return {
+			offset: OFFSETS[dir],
+			label: LABELS[keyCode],
+			dir: dir
+		};
+	});
+
 	return {
-		render: function(context, offset, inputDisplay, keyMap, playerIndex) {
-			renderTranslated(context, offset.x, offset.y, function(context) {
-				var step = KEY_DISPLAY_STYLE.size + KEY_DISPLAY_STYLE.margin;
+		size: function(scale) {
+			var size = KEY_DISPLAY_STYLE.size * scale;
+			var margin = KEY_DISPLAY_STYLE.margin;
+			return vec(3 * size + 2 * margin, 2 * size + margin);
+		},
+		render: function(context, scale, highlighted) {
+			var size = KEY_DISPLAY_STYLE.size * scale;
+			var step = size + KEY_DISPLAY_STYLE.margin;
 
-				for (var keyCode in keyMap) {
-					var keyDesc = keyMap[keyCode];
-					if (keyDesc.index !== playerIndex) {
-						continue;
-					}
-
-					var label = LABELS[keyCode];
-					var dir = keyDesc.dir;
-					var off = OFFSETS[dir];
-
-					renderTranslated(context, off.x * step, off.y * step, function(context) {
-						KeyDisplay.render(context, label, inputDisplay.highlighted[dir]);
-					});
-				}
+			elements.forEach(function(element) {
+				renderTranslated(context, element.offset.x * step, element.offset.y * step, function(context) {
+					KeyDisplay.render(context, element.label, size, highlighted[element.dir]);
+				});
 			});
 		}
 	};
-})();
+};
