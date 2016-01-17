@@ -13,28 +13,6 @@ var MainScreen = function(map, playerCount) {
 	var playerCollision = PlayerCollision(playerLogic);
 	var miniMapView = MiniMapView(map);
 
-	var winRect = entities.add({
-		pos: vec(640, 150),
-		render: { scriptId: 'rect' },
-		rect: { width: 1000, height: 400, anchor: vec(0.5, 0) },
-		style: WIN_BG_STYLE,
-		zOrder: 3,
-		alpha: 0
-	});
-
-	var youWinText = entities.add({
-		pos: vec(0, 200),
-		size: vec(1280, 100),
-		text: {
-			font: { name: 'consolas', height: 120, lineSpacing: 1.5 },
-			message: ""
-		},
-		render: { scriptId: 'text' },
-		style: { fill: 'red' },
-		zOrder: 4,
-		alpha: 0
-	});
-
 	var timeText = entities.add({
 		pos: vec(20, 640),
 		size: vec(600, 100),
@@ -93,23 +71,26 @@ var MainScreen = function(map, playerCount) {
 
 	var aiPlayer = players[playerCount];
 
-	function win(entity) {
-		var time = Time.now() - roundStart;
+	var sceneDescriptions = [
+		{
+			offset: vec(0.25, 0.5),
+			viewport: rcoords(0, 0, 0.5, 1),
+			miniMapOffset: vec(0.008, 0.014)
+		},
+		{
+			offset: vec(0.75, 0.5),
+			viewport: rcoords(0.5, 0, 0.5, 1),
+			miniMapOffset: vec(0.508, 0.014)
+		}
+	];
 
-		youWinText.style.fill = entity.style.stroke;
-		youWinText.text.message = "{{bold}}{{center}}" + entity.name + " FINISHED\n" + time.toFixed(2) + 's';
-
-		var bgw = winRect.rect.width;
-		var bgh = winRect.rect.height;
-		behaviorSystem.add(Behavior.interval(1, function(progress) {
-			youWinText.alpha = progress;
-			youWinText.text.font.height = 120 * progress;
-
-			winRect.rect.width = progress * bgw;
-			winRect.rect.height = progress * bgh;
-			winRect.alpha = progress;
-		}));
+	if (playerCount < 2) {
+		sceneDescriptions[0].viewport.sx = 1;
+		sceneDescriptions[0].offset.x = 0.5;
+		sceneDescriptions[0].miniMapOffset.x += 0.5;
 	}
+
+	var raceUi = RaceUi(sceneDescriptions);
 
 	function update(dt) {
 		for (var i = 0; i < players.length; i++) {
@@ -177,7 +158,7 @@ var MainScreen = function(map, playerCount) {
 			Behavior.forever(function(event) { handleKeyDown(event.keyCode); })
 		)
 
-		win(winningPlayer);
+		behaviorSystem.add(raceUi.onWin(winningPlayer, Time.now() - roundStart));
 
 		yield Behavior.first(Behavior.type('keydown'), Behavior.type('mousedown'));
 		return {};
@@ -187,25 +168,6 @@ var MainScreen = function(map, playerCount) {
 		Behavior.forever(behaviorSystem.update),
 		round
 	);
-
-	var sceneDescriptions = [
-		{
-			offset: vec(0.25, 0.5),
-			viewport: rcoords(0, 0, 0.5, 1),
-			miniMapOffset: vec(0.008, 0.014)
-		},
-		{
-			offset: vec(0.75, 0.5),
-			viewport: rcoords(0.5, 0, 0.5, 1),
-			miniMapOffset: vec(0.508, 0.014)
-		}
-	];
-
-	if (playerCount < 2) {
-		sceneDescriptions[0].viewport.sx = 1;
-		sceneDescriptions[0].offset.x = 0.5;
-		sceneDescriptions[0].miniMapOffset.x += 0.5;
-	}
 
 	function renderPlayerScene(context, map, players, mainPlayerIndex, description) {
 		var canvas = context.canvas;
@@ -246,7 +208,7 @@ var MainScreen = function(map, playerCount) {
 				renderPlayerScene(context, map, players, i, sceneDescriptions[i]);
 			}
 
-			renderSystem.show(context, entities);
+			raceUi.render(context);
 		}
 	};
 }
