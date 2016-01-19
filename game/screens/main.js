@@ -6,6 +6,7 @@ var MainScreen = function(map, playerCount, aiCount) {
 	var aiSystem = AiSystem(playerLogic);
 	var playerCollision = PlayerCollision(playerLogic);
 	var miniMapView = MiniMapView(map);
+	var mapView = MapView(map);
 
 	var timeText = entities.add({
 		pos: vec(20, 640),
@@ -179,7 +180,7 @@ var MainScreen = function(map, playerCount, aiCount) {
 		prioritizedPlayers.push(prioritizedPlayers.splice(mainPlayerIndex, 1)[0]);
 
 		FrameProfiler.start('MapView');
-		MapView.render(context, map, vp, prioritizedPlayers, off);
+		mapView.render(context, vp, prioritizedPlayers, off);
 		FrameProfiler.stop();
 
 		var player = players[mainPlayerIndex];

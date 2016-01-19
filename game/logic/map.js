@@ -17,6 +17,10 @@ var MapLogic = (function() {
 		return (value === undefined) || (value === ' ');
 	}
 
+	function isFinish(value) {
+		return (value === 'Y');
+	}
+
 	function canTravel(value, dir) {
 		return isCrossing(value) || ((dir.x !== 0) && (value === '-')) || ((dir.y !== 0) && (value === '|'));
 	}
@@ -60,6 +64,7 @@ var MapLogic = (function() {
 		},
 		isCrossing: isCrossing,
 		isRegularCrossing: isRegularCrossing,
-		isWall: isWall
+		isWall: isWall,
+		isFinish: isFinish
 	};
 })();

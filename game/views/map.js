@@ -1,4 +1,6 @@
-var MapView = (function() {
+var MapView = function(map) {
+	var mapSlice = MapSlice();
+
 	function drawBorder(context, viewport, color) {
 		context.strokeStyle = color;
 		context.lineWidth = VIEW_BORDER;
@@ -48,7 +50,7 @@ var MapView = (function() {
 	}
 
 	return {
-		render: function(context, map, viewport, players, offset) {
+		render: function(context, viewport, players, offset) {
 			var mainPlayer = players[players.length - 1];
 
 			var delta = vscale(vsub(offset, viewport), 1 / MAP_CELL_SIZE);
@@ -64,7 +66,7 @@ var MapView = (function() {
 				renderTranslated(context, offset.x, offset.y, function(context) {
 					CameraRenderer.transform(context, mainPlayer.mapPos, 0, MAP_CELL_SIZE, function(context) {
 						var mapSize = MapLogic.getSize(map);
-						MapSlice.render(context, map, left, top, right, bottom);
+						mapSlice.render(context, map, left, top, right, bottom);
 
 						drawSpeedArrows(context, map, mainPlayer);
 
@@ -90,4 +92,4 @@ var MapView = (function() {
 			});
 		}
 	};
-})();
+};

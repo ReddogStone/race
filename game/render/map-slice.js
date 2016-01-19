@@ -1,4 +1,24 @@
-var MapSlice = (function() {
+var MapSlice = function() {
+	var FINISH_COLS = 25;
+	var FINISH_ROWS = 3;
+	var FINISH_CELL_SIZE = MAP_ROAD_SIZE / FINISH_COLS;
+	var FINISH_FILL = 'black';
+
+	var finishBuffer = document.createElement('canvas');
+	finishBuffer.width = MAP_ROAD_SIZE;
+	finishBuffer.height = FINISH_ROWS * FINISH_CELL_SIZE;
+
+	var finishBufferContext = finishBuffer.getContext('2d');
+	finishBufferContext.clearRect(0, 0, finishBuffer.width, finishBuffer.height);
+	finishBufferContext.fillStyle = FINISH_FILL;
+	for (var y = 0; y < FINISH_ROWS; y++) {
+		for (var x = 0; x < FINISH_COLS; x++) {
+			if ((x + y) % 2 === 0) {
+				finishBufferContext.fillRect(x * FINISH_CELL_SIZE, y * FINISH_CELL_SIZE, FINISH_CELL_SIZE, FINISH_CELL_SIZE);
+			}
+		}
+	}
+
 	var ROAD_SIZE = MAP_ROAD_SIZE / MAP_CELL_SIZE;
 
 	var off = MAP_STYLE.rasterLineWidth;
@@ -14,26 +34,31 @@ var MapSlice = (function() {
 		context.fillRect(-0.5 - off, -0.5 - off, 1 + 2 * off, 1 + 2 * off);
 	}
 
-	function renderRoad(context, map, x, y) {
-		var left = map[y][x - 1];
-		var right = map[y][x + 1];
-		var top = (map[y - 1] || '')[x];
-		var bottom = (map[y + 1] || '')[x];
+	function renderFinish(context, rotation) {
+		context.rotate(rotation);
+		context.drawImage(finishBuffer, -0.5 * ROAD_SIZE, -0.5, finishBuffer.width / MAP_CELL_SIZE, finishBuffer.height / MAP_CELL_SIZE);
+		context.rotate(-rotation);
+	}
 
+	function renderRoad(context, map, x, y, isFinish) {
 		context.fillStyle = MAP_STYLE.road;
 
 		fillRect(context, 0, 0, ROAD_SIZE, ROAD_SIZE);
 		if (MapLogic.canGo(map, vec(x, y), vec(-1, 0))) {
 			fillRect(context, -0.25, 0, 0.5, ROAD_SIZE);
+			if (isFinish) { renderFinish(context, -Math.PI * 0.5); }
 		}
 		if (MapLogic.canGo(map, vec(x, y), vec(1, 0))) {
 			fillRect(context, 0.25, 0, 0.5, ROAD_SIZE);
+			if (isFinish) { renderFinish(context, Math.PI * 0.5); }
 		}
 		if (MapLogic.canGo(map, vec(x, y), vec(0, -1))) {
 			fillRect(context, 0, -0.25, ROAD_SIZE, 0.5);
+			if (isFinish) { renderFinish(context, 0); }
 		}
 		if (MapLogic.canGo(map, vec(x, y), vec(0, 1))) {
 			fillRect(context, 0, 0.25, ROAD_SIZE, 0.5);
+			if (isFinish) { renderFinish(context, Math.PI); }
 		}
 	}
 
@@ -41,7 +66,7 @@ var MapSlice = (function() {
 		renderBackgroundCell(context);
 
 		if (cellValue && (cellValue !== ' ')) {
-			renderRoad(context, map, x, y);
+			renderRoad(context, map, x, y, MapLogic.isFinish(cellValue));
 		}
 	}
 
@@ -52,4 +77,4 @@ var MapSlice = (function() {
 			renderMap(context, map, left, top, right, bottom, renderCell);
 		}
 	};
-})();
+};
