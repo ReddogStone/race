@@ -1,4 +1,4 @@
-var MainScreen = function(map, playerCount) {
+var MainScreen = function(map, playerCount, aiCount) {
 	var entities = EntitySystem();
 	var behaviorSystem = BehaviorSystem();
 	
@@ -63,7 +63,11 @@ var MainScreen = function(map, playerCount) {
 		makePlayer('RED', PLAYER2_STYLE, 1)
 	];
 
-	var aiPlayer = players[playerCount];
+	if (aiCount) {
+		var aiPlayer = players[playerCount];
+	}
+
+	players = players.slice(0, playerCount + aiCount);
 
 	var sceneDescriptions = [
 		{

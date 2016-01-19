@@ -1,31 +1,86 @@
 var RootScreen = function() {
-	var map = [
-		"          0---0              ",
-		"          |   |   0---0      ",
-		"     0----0-0 0---0   |      ",
-		"     |      |         |      ",
-		"X-0-000-0---0---0---0-0--0--Y",
-		"  | 0-0 |       0---0 |  |   ",
-		"  |     |  0----0     0--0   ",
-		"  0--0  |  |                 ",
-		"     0--0--0                 ",
+	var levels = [
+		{
+			players: 1,
+			ai: 0,
+			map: [
+				"     ",
+				"     ",
+				"X---Y",
+				"     ",
+				"     "
+			]
+		},
+		{
+			players: 1,
+			ai: 0,
+			map: [
+				"  Y",
+				"  |",
+				"X-0"
+			]
+		},
+		{
+			players: 1,
+			ai: 0,
+			map: [
+				"  0--0  ",
+				"X-0--0-Y"
+			]
+		},
+		{
+			players: 1,
+			ai: 0,
+			map: [
+				"  0-------------0",
+				"  |             |",
+				"X-0             Y",
+				"  | 0-0         |",
+				"  0-0 0---------0",
+			]
+		},
+		{
+			players: 1,
+			ai: 0,
+			map: [
+				"0------0------Y",
+				"|      |      |",
+				"0------0------0",
+				"|      |      |",
+				"X------0------0",
+			]
+		},
+		{
+			players: 1,
+			ai: 1,
+			map: [
+				"          0---0              ",
+				"          |   |   0---0      ",
+				"     0----0-0 0---0   |      ",
+				"     |      |         |      ",
+				"X-0-000-0---0---0---0-0--0--Y",
+				"  | 0-0 |       0---0 |  |   ",
+				"  |     |  0----0     0--0   ",
+				"  0--0  |  |                 ",
+				"     0--0--0                 ",
+			]
+		},
+		{
+			players: 1,
+			ai: 1,
+			map: [
+				"        0-----0              ",
+				"        |  0--0              ",
+				"0---0---0  0--------0        ",
+				"|   |               |        ",
+				"X---0-------0       0-------Y",
+				"    |       |       |        ",
+				"    |0-0    0----0  |        ",
+				"    00 00   0-0  |  |        ",
+				"        0-----0  0--0        ",
+			]
+		}
 	];
-
-	var map = [
-		"        0-----0              ",
-		"        |  0--0              ",
-		"0---0---0  0--------0        ",
-		"|   |               |        ",
-		"X---0-------0       0-------Y",
-		"    |       |       |        ",
-		"    |0-0    0----0  |        ",
-		"    00 00   0-0  |  |        ",
-		"        0-----0  0--0        ",
-	];
-
-	var start = Time.now();
-	var path = PathFinding.shortest(map, MapLogic.getStart(map), vec(0, 0), 0);
-	console.log('Pathfinding: ' + (Time.now() - start));
 
 	return Screen.run(function*() {
 		yield LoadingScreen();
@@ -33,8 +88,9 @@ var RootScreen = function() {
 		while (true) {
 			// yield TitleScreen();
 
-			while (true) {
-				yield MainScreen(map, 1);
+			for (var i = 0; i < levels.length; i++) {
+				var level = levels[i];
+				yield MainScreen(level.map, level.players, level.ai);
 			}
 		}
 	});
