@@ -9,6 +9,14 @@ var MapLogic = (function() {
 		return (value === '0') || (value === 'X') || (value === 'Y');
 	}
 
+	function isRegularCrossing(value) {
+		return (value === '0');
+	}
+
+	function isWall(value) {
+		return (value === undefined) || (value === ' ');
+	}
+
 	function canTravel(value, dir) {
 		return isCrossing(value) || ((dir.x !== 0) && (value === '-')) || ((dir.y !== 0) && (value === '|'));
 	}
@@ -49,6 +57,9 @@ var MapLogic = (function() {
 			px *= 2;
 			py *= 2;
 			return vdot(dir, vec(px, py));
-		}
+		},
+		isCrossing: isCrossing,
+		isRegularCrossing: isRegularCrossing,
+		isWall: isWall
 	};
 })();

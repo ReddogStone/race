@@ -33,6 +33,15 @@ var PrimitiveRenderer = (function() {
 				context.lineTo(0, size.y);
 				context.closePath();
 			});
+		},
+		triangleArrow: function(context, middleOffset, style, size) {
+			drawPath(context, style, function() {
+				context.moveTo(0, 0);
+				context.lineTo(size.x, 0.5 * size.y);
+				context.lineTo(0, size.y);
+				context.lineTo(middleOffset * size.x, 0.5 * size.y);
+				context.closePath();
+			});
 		}
 	};
 })();

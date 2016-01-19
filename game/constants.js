@@ -11,7 +11,7 @@ var MINIMAP_STYLE = {
 var MAP_STYLE = {
 	road: '#9090F0',
 	bg: '#202060',
-	rasterLineWidth: 0.005
+	rasterLineWidth: 0.002
 };
 
 var PLAYER_STYLE = {

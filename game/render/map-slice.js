@@ -1,14 +1,15 @@
 var MapSlice = (function() {
 	var ROAD_SIZE = MAP_ROAD_SIZE / MAP_CELL_SIZE;
 
+	var off = MAP_STYLE.rasterLineWidth;
+
 	function fillRect(context, x, y, width, height) {
 		context.beginPath();
-		context.rect(x - 0.5 * width, y - 0.5 * height, width, height);
+		context.rect(x - 0.5 * width + off, y - 0.5 * height + off, width - 2 * off, height - 2 * off);
 		context.fill();
 	}
 
 	function renderBackgroundCell(context) {
-		var off = MAP_STYLE.rasterLineWidth;
 		context.fillStyle = MAP_STYLE.bg;
 		context.fillRect(-0.5 - off, -0.5 - off, 1 + 2 * off, 1 + 2 * off);
 	}
