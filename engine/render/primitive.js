@@ -1,55 +1,38 @@
-function draw(context, pos, scale, rot, style, path) {
-	context.save();
+var PrimitiveRenderer = (function() {
+	function drawPath(context, style, path) {
+		context.beginPath();
+		path();
 
-	context.translate(pos.x, pos.y);
-	context.rotate(rot);
-	context.scale(scale.x, scale.y);
+		if (style.fill) {
+			context.fillStyle = style.fill;
+			context.fill();
+		}
 
-	context.beginPath();
+		if (style.stroke) {
+			context.strokeStyle = style.stroke;
+			context.lineWidth = style.lineWidth;
+			context.stroke();
+		}
+	}	
 
-	path(context);
-
-	if (style.fill) {
-		context.fillStyle = style.fill;
-		context.fill();
-	}
-	if (style.stroke) {
-		context.strokeStyle = style.stroke;
-		context.lineWidth = style.lineWidth || 1;
-		context.stroke();
-	}
-
-	context.restore();
-}
-
-function renderRect(context, entity) {
-	var pos = entity.pos;
-	if (!pos) { return; }
-
-	var rect = entity.rect;
-	var style = entity.style || { fill: 'white', stroke: 'black', lineWidth: 1 };
-	var scale = entity.scale || vec(1, 1);
-	var rot = entity.rotation || 0;
-
-	var width = rect.width;
-	var height = rect.height;
-
-	var anchor = rect.anchor || vec(0, 0);
-
-	draw(context, pos, scale, rot, style, function(context) {
-		context.translate(-anchor.x * width, -anchor.y * height);
-		context.rect(0, 0, width, height);
-	});
-}
-
-function renderCircle(context, entity) {
-	var pos = entity.pos;
-	if (!pos) { return; }
-
-	var scale = entity.scale || vec(1, 1);
-	var rot = entity.rotation || 0;
-
-	draw(context, pos, scale, rot, style, function(context) {
-		context.arc(0, 0, 1, 0, 2 * Math.PI);
-	});
-}
+	return {
+		rect: function(context, style, size) {
+			drawPath(context, style, function() {
+				context.rect(0, 0, size.x, size.y);
+			});
+		},
+		circle: function(context, style, radius) {
+			drawPath(context, style, function() {
+				context.arc(radius, radius, radius, 0, 2 * Math.PI);
+			});
+		},
+		triangle: function(context, style, size) {
+			drawPath(context, style, function() {
+				context.moveTo(0, 0);
+				context.lineTo(size.x, 0.5 * size.y);
+				context.lineTo(0, size.y);
+				context.closePath();
+			});
+		}
+	};
+})();

@@ -1,13 +1,7 @@
 var MainScreen = function(map, playerCount) {
 	var entities = EntitySystem();
 	var behaviorSystem = BehaviorSystem();
-	var renderSystem = RenderSystem({
-		'sprite': renderSprite,
-		'text': renderText,
-		'rect': renderRect,
-		'circle': renderCircle
-	});
-
+	
 	var playerLogic = PlayerLogic(behaviorSystem);
 	var aiSystem = AiSystem(playerLogic);
 	var playerCollision = PlayerCollision(playerLogic);

@@ -28,18 +28,11 @@ var RaceUi = function(sceneDescriptions) {
 				var scale = winMessageBox.scale;
 				var height = scale * WIN_MESSAGE_FONT_SIZE;
 
-				var rectWidth = 1000 * scale;
-				var rectHeight = 400 * scale;
-
 				renderTranslated(context, 0.5 * canvas.width, 0.5 * canvas.height, function(context) {
-					context.fillStyle = WIN_BG_STYLE.fill;
-					context.strokeStyle = WIN_BG_STYLE.stroke;
-					context.lineWidth = WIN_BG_STYLE.lineWidth;
-
-					context.beginPath();
-					context.rect(-0.5 * rectWidth, -0.5 * rectHeight, rectWidth, rectHeight);
-					context.fill();
-					context.stroke();
+					var rectSize = vscale(vec(1000, 400), scale);
+					renderTranslated(context, -0.5 * rectSize.x, -0.5 * rectSize.y, function(context) {
+						PrimitiveRenderer.rect(context, WIN_BG_STYLE, rectSize);
+					});
 
 					renderTranslated(context, 0, -0.7 * height, function(context) {
 						renderString(context, winMessageBox.lines[0], height, MAIN_FONT, color, vec(0.5, 0.5));
