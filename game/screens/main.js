@@ -1,4 +1,4 @@
-var MainScreen = function(map, playerCount, aiCount) {
+var MainScreen = function(map, playerCount, aiCount, startMessage) {
 	var entities = EntitySystem();
 	var behaviorSystem = BehaviorSystem();
 	
@@ -87,6 +87,12 @@ var MainScreen = function(map, playerCount, aiCount) {
 		sceneDescriptions[0].viewport.sx = 1;
 		sceneDescriptions[0].offset.x = 0.5;
 		sceneDescriptions[0].miniMapOffset.x = 0.5;
+
+		players[0].name = getString('you_player_name');
+
+		if (aiCount > 0) {
+			players[1].name = getString('opponent_player_name');
+		}
 	}
 
 	var raceUi = RaceUi(sceneDescriptions);
@@ -141,7 +147,9 @@ var MainScreen = function(map, playerCount, aiCount) {
 	}
 
 	var round = Behavior.run(function*() {
-		yield raceUi.showStartMessage('Hi there', 'Here is a longish text that should not fit at all into one line. At least I hope so!');
+		if (startMessage) {
+			yield raceUi.showStartMessage(startMessage.title, startMessage.message);
+		}
 
 		highlightStartDirs();
 		yield Behavior.filter(function(event) {

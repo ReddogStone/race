@@ -13,7 +13,9 @@ var RaceUi = function(sceneDescriptions) {
 					startMessageBox.scale = progress;
 				});
 
-				yield Behavior.type('mousedown');
+				yield Behavior.waitFor(function(event) {
+					return (event.type === 'mousedown') || (event.type === 'keydown');
+				});
 
 				startMessageBox = null;
 			});

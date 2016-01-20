@@ -35,7 +35,7 @@ var SPEED_BAR_STYLE = {
 };
 
 var WIN_BG_STYLE = {
-	fill: '#F0F090',
+	fill: '#F0F0F0',
 	stroke: '#606020',
 	lineWidth: 5
 };
@@ -50,7 +50,7 @@ var KEY_DISPLAY_STYLE = {
 	relativeTextSize: 0.7
 };
 
-var MAIN_FONT = 'Consolas';
+var MAIN_FONT = 'Times';
 
 var MINIMAP_CELL_SIZE = 15;
 var MAP_CELL_SIZE = 400;

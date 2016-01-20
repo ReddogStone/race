@@ -12,12 +12,11 @@ var TitleScreen = function() {
 					pos: vec(0, 100),
 					size: vec(context.canvas.width, context.canvas.height),
 					text: {
-						font: { name: 'consolas', height: 70, lineSpacing: 1.5 },
+						font: { name: MAIN_FONT, height: 70, lineSpacing: 1.5 },
 						message: "{{bold}}{{huge}}{{center}}" + 
-							"THE RACE\n" +
+							getString('game_title') + "\n" +
 							"{{normal}}{{big}}" + 
-							"On the Wall\n" +
-							"{{tiny}}(This is a lie)"
+							getString('game_sub_title')
 					}
 				});
 				break;
