@@ -99,4 +99,44 @@ var STRINGS = {
 		'de': 'Du siehst also, wohin dein Pfad führt. Doch nur Erfahrung lehrt dich die Möglichkeiten richtig abzuwägen.',
 		'ru': 'Значит ты видишь, куда ведет твоя дорога. Но только опыт научит тебя правильно оценивать альтернативы.'
 	},
+	'level7_title': {
+		'en-us': 'Blindness',
+		'de': 'Blindheit',
+		'ru': 'Слепота'
+	},
+	'level7_msg': {
+		'en-us': 'Most of the time you cannot see so far. The past fades quickly and distant future is not yet to be seen.',
+		'de': 'Meistens kannst du nicht so weit sehen. Die Vergangenheit gerät schnell in Vergessenheit und ferne Zukunft kann nicht ergründet werden.',
+		'ru': 'Чаще всего ты видишь не так далеко. Прошлое быстро забывается, а заглянуть в далекое будущее никому не под силу.'
+	},
+	'level8_title': {
+		'en-us': 'Obstacles',
+		'de': 'Hürden',
+		'ru': 'Препятствия'
+	},
+	'level8_msg': {
+		'en-us': 'Even when the goal can be seen from the start. Which obstacles can hide in the darkness of the future?',
+		'de': 'Selbst wenn das Ziel vom Beginn an zu sehen ist. Welche Hürden mögen sich in der Dunkelheit der Zukunft verstecken?',
+		'ru': 'Даже если цель видна с самого начала. Какие препятствия могут быть скрыты в темноте будущего?'
+	},
+	'level9_title': {
+		'en-us': 'Perspective',
+		'de': 'Perspektive',
+		'ru': 'Перспектива'
+	},
+	'level9_msg': {
+		'en-us': 'Which path will lead you towards success, which one is misleading? The choices you get may lead you in a wrong direction.',
+		'de': 'Welcher Pfad führt dich zu deinem Erfolg, welcher ist ein Irrweg? Die Wahl vor die du gestellt wirst kann dich in die falsche Richtung führen.',
+		'ru': 'Какой путь ведет к твоему успеху, какой напротив в тупик? Выбор перед которым ты стоишь может увести тебя в неправильное направление.'
+	},
+	'level10_title': {
+		'en-us': 'Competition',
+		'de': 'Konkurrenz',
+		'ru': 'Конкуренция'
+	},
+	'level10_msg': {
+		'en-us': 'Sooner or later you will always face competition. Will you double your efforts to stay ahead or maybe decide to block off their path?',
+		'de': 'Früher oder später triffst du immer auf Konkurrenz. Wirst du deine Anstrengung verdoppeln, um vorn zu bleiben, oder vielleicht deren Weg blockieren?',
+		'ru': 'Рано или поздно ты встретишь конкуренцию. Удвоишь ли ты свои старания, чтоб остаться впереди или может быть встанешь у них на пути?'
+	},
 };

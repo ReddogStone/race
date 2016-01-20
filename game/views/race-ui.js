@@ -6,15 +6,24 @@ var RaceUi = function(sceneDescriptions) {
 		showStartMessage: function(title, message) {
 			startMessageBox = {
 				title: title,
-				message: message
+				message: message,
+				textAlpha: 0,
+				boxAlpha: 1
 			};
 			return Behavior.run(function*() {
-				yield Behavior.interval(1, function(progress) {
-					startMessageBox.scale = progress;
-				});
+				yield Behavior.until(
+					Behavior.interval(1, function(progress) {
+						startMessageBox.textAlpha = progress;
+					}),
+					Behavior.waitFor(function(event) {
+						return (event.type === 'mousedown') || (event.type === 'keydown');
+					})
+				);
 
-				yield Behavior.waitFor(function(event) {
-					return (event.type === 'mousedown') || (event.type === 'keydown');
+				var textAlpha = startMessageBox.textAlpha;
+				yield Behavior.interval(0.5, function(progress) {
+					startMessageBox.textAlpha = lerp(textAlpha, 0, progress);
+					startMessageBox.boxAlpha = 1 - progress;
 				});
 
 				startMessageBox = null;
@@ -63,15 +72,19 @@ var RaceUi = function(sceneDescriptions) {
 
 			if (startMessageBox) {
 				var color = START_MESSAGE_BOX_STYLE.textColor;
-				var scale = startMessageBox.scale;
+				var scale = 1;
 				var titleHeight = scale * START_MESSAGE_BOX_STYLE.titleFontSize;
 				var messageHeight = scale * START_MESSAGE_BOX_STYLE.messageFontSize;
 
 				renderTranslated(context, 0.5 * canvas.width, 0.5 * canvas.height, function(context) {
+					context.globalAlpha = startMessageBox.boxAlpha;
+
 					var rectSize = vscale(vec(1000, 400), scale);
 					renderTranslated(context, -0.5 * rectSize.x, -0.5 * rectSize.y, function(context) {
 						PrimitiveRenderer.rect(context, WIN_BG_STYLE, rectSize);
 					});
+
+					context.globalAlpha = startMessageBox.textAlpha;
 
 					var y = -0.5 * (rectSize.y) + scale * 30;
 					renderTranslated(context, 0, y, function(context) {
@@ -109,6 +122,8 @@ var RaceUi = function(sceneDescriptions) {
 						});
 						y += messageHeight * 1.2;
 					});
+
+					context.globalAlpha = 1;
 				});
 			}			
 		}

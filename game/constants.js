@@ -35,7 +35,7 @@ var SPEED_BAR_STYLE = {
 };
 
 var WIN_BG_STYLE = {
-	fill: '#F0F0F0',
+	fill: '#F0F0E0',
 	stroke: '#606020',
 	lineWidth: 5
 };

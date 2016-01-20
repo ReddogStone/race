@@ -1,11 +1,17 @@
-var MainScreen = function(map, playerCount, aiCount, startMessage) {
+var MainScreen = function(level) {
+	var map = level.map;
+	var playerCount = level.players;
+	var aiCount = level.ai;
+	var startMessage = level.message;
+	var visibleSize = level.visibleSize;
+
 	var entities = EntitySystem();
 	var behaviorSystem = BehaviorSystem();
 	
 	var playerLogic = PlayerLogic(behaviorSystem);
 	var aiSystem = AiSystem(playerLogic);
 	var playerCollision = PlayerCollision(playerLogic);
-	var miniMapView = MiniMapView(map);
+	var miniMapView = MiniMapView(map, visibleSize);
 	var mapView = MapView(map);
 
 	var timeText = entities.add({

@@ -89,7 +89,8 @@ var PlayerLogic = function(behaviorSystem) {
 			toMiddle(player, 1);
 			player.burnedPos = null;
 			player.dir = vec(0, 0);
-			player.speed--;
+			player.speed = Math.max(player.speed - 2, 0);
+			player.shownSpeed = player.speed;
 		}
 	}
 
