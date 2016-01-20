@@ -1,4 +1,6 @@
 var MiniMapView = function(map) {
+	var PIVOT = vec(0.5, 0);
+
 	var mapSize = MapLogic.getSize(map);
 
 	var buffer = document.createElement('canvas');
@@ -15,7 +17,9 @@ var MiniMapView = function(map) {
 
 	return {
 		render: function(context, players, offset) {
-			renderTranslated(context, offset.x, offset.y, function(context) {
+			var pivot = vmul(vec(buffer.width, buffer.height), PIVOT);
+
+			renderPivotTransformed(context, offset.x, offset.y, 0, 1, pivot.x, pivot.y, function(context) {
 				context.drawImage(buffer, 0, 0);
 
 				CameraRenderer.transform(context, vec(0, 0), 0, MINIMAP_CELL_SIZE, function(context) {

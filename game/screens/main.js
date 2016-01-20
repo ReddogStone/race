@@ -74,19 +74,19 @@ var MainScreen = function(map, playerCount, aiCount) {
 		{
 			offset: vec(0.25, 0.5),
 			viewport: rcoords(0, 0, 0.5, 1),
-			miniMapOffset: vec(0.008, 0.014)
+			miniMapOffset: vec(0.25, 0.014)
 		},
 		{
 			offset: vec(0.75, 0.5),
 			viewport: rcoords(0.5, 0, 0.5, 1),
-			miniMapOffset: vec(0.508, 0.014)
+			miniMapOffset: vec(0.75, 0.014)
 		}
 	];
 
 	if (playerCount < 2) {
 		sceneDescriptions[0].viewport.sx = 1;
 		sceneDescriptions[0].offset.x = 0.5;
-		sceneDescriptions[0].miniMapOffset.x += 0.5;
+		sceneDescriptions[0].miniMapOffset.x = 0.5;
 	}
 
 	var raceUi = RaceUi(sceneDescriptions);
