@@ -60,8 +60,8 @@ var MainScreen = function(map, playerCount, aiCount) {
 	var roundStart = 0;
 
 	var players = [
-		makePlayer('GREEN', PLAYER_STYLE, 0),
-		makePlayer('RED', PLAYER2_STYLE, 1)
+		makePlayer(getString('player1_name'), PLAYER_STYLE, 0),
+		makePlayer(getString('player2_name'), PLAYER2_STYLE, 1)
 	];
 
 	if (aiCount) {
@@ -141,6 +141,8 @@ var MainScreen = function(map, playerCount, aiCount) {
 	}
 
 	var round = Behavior.run(function*() {
+		yield raceUi.showStartMessage('Hi there', 'Here is a longish text that should not fit at all into one line. At least I hope so!');
+
 		highlightStartDirs();
 		yield Behavior.filter(function(event) {
 			return (event.type === 'keydown') && handleKeyDown(event.keyCode);

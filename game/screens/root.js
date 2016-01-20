@@ -99,7 +99,7 @@ var RootScreen = function() {
 		while (true) {
 			// yield TitleScreen();
 
-			for (var i = 5; i < levels.length; i++) {
+			for (var i = 0; i < levels.length; i++) {
 				var level = levels[i];
 				yield MainScreen(level.map, level.players, level.ai);
 			}

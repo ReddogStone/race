@@ -66,3 +66,9 @@ var MAX_PLAYER_SPEED = 20;
 var TURN_TIME = 0.2;
 
 var WIN_MESSAGE_FONT_SIZE = 110;
+
+var START_MESSAGE_BOX_STYLE = {
+	titleFontSize: 110,
+	messageFontSize: 34,
+	textColor: 'black'
+};

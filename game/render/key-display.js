@@ -13,7 +13,7 @@ var KeyDisplay = (function() {
 			context.stroke();
 
 			renderTranslated(context, size * 0.5, size * 0.5, function(context) {
-				renderString(context, key, KEY_DISPLAY_STYLE.relativeTextSize * size, MAIN_FONT, stroke);
+				StringRenderer.render(context, key, KEY_DISPLAY_STYLE.relativeTextSize * size, MAIN_FONT, stroke);
 			});
 		}
 	};
