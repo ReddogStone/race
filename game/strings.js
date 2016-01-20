@@ -125,7 +125,7 @@ var STRINGS = {
 		'ru': 'Перспектива'
 	},
 	'level9_msg': {
-		'en-us': 'Which path will lead you towards success, which one is misleading? The choices you get may lead you in a wrong direction.',
+		'en-us': 'Which path will lead you towards success, which one is misleading? The choices you are presented with may lead you in a wrong direction.',
 		'de': 'Welcher Pfad führt dich zu deinem Erfolg, welcher ist ein Irrweg? Die Wahl vor die du gestellt wirst kann dich in die falsche Richtung führen.',
 		'ru': 'Какой путь ведет к твоему успеху, какой напротив в тупик? Выбор перед которым ты стоишь может увести тебя в неправильное направление.'
 	},
