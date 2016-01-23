@@ -48,7 +48,26 @@ var Behavior = (function() {
 			}
 			return { done: true, value: event };
 		};
-	}	
+	}
+
+	function forever(func) {
+		return function(event) {
+			func(event);
+			return { done: false };
+		};
+	}
+
+	function first(b1, b2) {
+		return function(event) {
+			var res = b1(event);
+			if (res.done) { return res; }
+
+			var res = b2(event);
+			if (res.done) { return res; }
+
+			return { done: false };
+		};
+	}
 
 	return {
 		run: function(generatorFunc) {
@@ -90,11 +109,7 @@ var Behavior = (function() {
 				return { done: false };
 			};
 		},
-		waitFor: function(func) {
-			return function(event) {
-				return { done: func(event) };
-			};
-		},
+		waitFor: filter,
 		type: function(type) {
 			return function(event) {
 				if (event.type !== type) {
@@ -104,28 +119,9 @@ var Behavior = (function() {
 			};
 		},
 		filter: filter,
-		forever: function(func) {
-			return function(event) {
-				func(event);
-				return { done: false };
-			};
-		},
-		input: function() {
-			return function(event) {
-				if (event.type !== 'update') {
-					return { done: true, value: event };
-				}
-				return { done: false };
-			};
-		},
-		mouseDown: function() {
-			return function(event) {
-				if (event.type === 'mousedown') {
-					return { done: true, value: event.pos };
-				}
-				return { done: false };
-			};
-		},
+		forever: forever,
+		input: filter.bind(null, function(event) { return event.type !== 'update' }),
+		mouseDown: filter.bind(null, function(event) { return event.type === 'mousedown' }),
 		parallel: function(behaviors) {
 			if (!Array.isArray(behaviors)) {
 				behaviors = Array.prototype.slice.call(arguments);
@@ -137,16 +133,16 @@ var Behavior = (function() {
 
 			return behaviors.reduce(twoParallel);
 		},
-		first: function(b1, b2) {
-			return function(event) {
-				var res = b1(event);
-				if (res.done) { return res; }
+		first: function(behaviors) {
+			if (!Array.isArray(behaviors)) {
+				behaviors = Array.prototype.slice.call(arguments);
+			}
 
-				var res = b2(event);
-				if (res.done) { return res; }
+			if (behaviors.length === 0) {
+				return function() { return { done: true, remaining: 0 }; };
+			}
 
-				return { done: false };
-			};
+			return behaviors.reduce(first);
 		},
 		interval: interval,
 		wait: function(duration) {
@@ -163,6 +159,15 @@ var Behavior = (function() {
 			return function() {
 				return { done: finished };
 			};
-		}		
+		},
+		until: function(runningBehavior, finishingBehavior) {
+			return first(
+				Behavior.run(function*() {
+					yield runningBehavior;
+					yield forever(function() {});
+				}),
+				finishingBehavior
+			);
+		}
 	};
 })();

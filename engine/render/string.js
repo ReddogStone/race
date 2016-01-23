@@ -1,4 +1,4 @@
-var renderString = (function() {
+var StringRenderer = (function() {
 	function showText(context, message, size, font, color) {
 		var withoutCommands = message.replace(/{{[^}]}}/g, '');
 		var charsToShow = Math.floor(withoutCommands.length * progress);
@@ -66,23 +66,29 @@ var renderString = (function() {
 		} while (i <= message.length);
 	}
 
-	return function(context, string, height, fontName, color, anchor) {
-		anchor = anchor || vec(0.5, 0.5);
+	return {
+		render: function(context, string, height, fontName, color, anchor) {
+			anchor = anchor || vec(0.5, 0.5);
 
-		context.fillStyle = color;
-		context.font = height + 'px ' + fontName;
-		context.textAlign = 'left';
-		context.textBaseline = 'top';
+			context.fillStyle = color;
+			context.font = height + 'px ' + fontName;
+			context.textAlign = 'left';
+			context.textBaseline = 'top';
 
-		var width = context.measureText(string).width;
+			var width = context.measureText(string).width;
 
-		renderTranslated(context, -anchor.x * width, -anchor.y * height, function(context) {
-/*			context.lineWidth = 1;
-			context.beginPath();
-			context.rect(0, 0, width, height);
-			context.stroke(); */
+			renderTranslated(context, -anchor.x * width, -anchor.y * height, function(context) {
+				/*context.lineWidth = 1;
+				context.beginPath();
+				context.rect(0, 0, width, height);
+				context.stroke();*/
 
-			context.fillText(string, 0, 0);
-		});
+				context.fillText(string, 0, 0);
+			});
+		},
+		getWidth: function(context, string, height, fontName) {
+			context.font = height + 'px ' + fontName;
+			return context.measureText(string).width;
+		}
 	};
 })();

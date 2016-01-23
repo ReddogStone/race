@@ -24,6 +24,10 @@ function vmul(v1, v2) {
 	return vec(v1.x * v2.x, v1.y * v2.y);
 }
 
+function vdiv(v1, v2) {
+	return vec(v1.x / v2.x, v1.y / v2.y);
+}
+
 function vsqlen(v) {
 	return v.x * v.x + v.y * v.y;
 }

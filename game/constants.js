@@ -72,3 +72,9 @@ var START_MESSAGE_BOX_STYLE = {
 	messageFontSize: 34,
 	textColor: 'black'
 };
+
+var BUTTON_STYLE = {
+	default: 'black',
+	highlighted: 'green',
+	pressed: 'red'
+};

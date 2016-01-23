@@ -1,7 +1,7 @@
 var STRINGS = {
 	'game_title': {
-		'en-us': 'THE RACE',
-		'de': 'DAS RENNEN',
+		'en-us': 'THE  RACE',
+		'de': 'DAS  RENNEN',
 		'ru': 'ГОНКА'
 	},
 	'game_sub_title': {
