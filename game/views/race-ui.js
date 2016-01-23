@@ -1,6 +1,21 @@
 var RaceUi = function() {
-	var winMessageBox = null;
+	var endMessageBox = null;
 	var startMessageBox = null;
+
+	function showEndMessageBox(color, lines) {
+		endMessageBox = {
+			color: color,
+			lines: lines,
+			scale: 0
+		};
+		return Behavior.run(function*() {
+			yield Behavior.interval(1, function(progress) {
+				endMessageBox.scale = progress;
+			});
+			yield Behavior.first(Behavior.type('keydown'), Behavior.type('mousedown'));
+			endMessageBox = null;			
+		});
+	}
 
 	return {
 		showStartMessage: function(title, message) {
@@ -35,24 +50,23 @@ var RaceUi = function() {
 		onStart: function() {
 		},
 		onWin: function(player, time) {
-			winMessageBox = {
-				color: player.style.stroke,
-				lines: [
-					getString('finish_msg', player.name),
-					time.toFixed(2) + getString('seconds')
-				]
-			};
-
-			return Behavior.interval(1, function(progress) {
-				winMessageBox.scale = progress;
-			});
+			return showEndMessageBox(player.style.stroke, [
+				getString('finish_msg', player.name),
+				time.toFixed(2) + getString('seconds')
+			]);
+		},
+		onLose: function() {
+			return showEndMessageBox(PLAYER_STYLE.stroke, [
+				getString('lose_msg'),
+				getString('try_again')
+			]);
 		},
 		render: function(context) {
 			var canvas = context.canvas;
 
-			if (winMessageBox) {
-				var color = winMessageBox.color;
-				var scale = winMessageBox.scale;
+			if (endMessageBox) {
+				var color = endMessageBox.color;
+				var scale = endMessageBox.scale;
 				var height = scale * WIN_MESSAGE_FONT_SIZE;
 
 				renderTranslated(context, 0.5 * canvas.width, 0.5 * canvas.height, function(context) {
@@ -62,10 +76,10 @@ var RaceUi = function() {
 					});
 
 					renderTranslated(context, 0, -0.7 * height, function(context) {
-						StringRenderer.render(context, winMessageBox.lines[0], height, MAIN_FONT, color, vec(0.5, 0.5));
+						StringRenderer.render(context, endMessageBox.lines[0], height, MAIN_FONT, color, vec(0.5, 0.5));
 					});
 					renderTranslated(context, 0, 0.7 * height, function(context) {
-						StringRenderer.render(context, winMessageBox.lines[1], height, MAIN_FONT, color, vec(0.5, 0.5));
+						StringRenderer.render(context, endMessageBox.lines[1], height, MAIN_FONT, color, vec(0.5, 0.5));
 					});
 				});
 			}

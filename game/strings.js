@@ -14,6 +14,16 @@ var STRINGS = {
 		'de': '{1} im Ziel',
 		'ru': '{1} у цели'
 	},
+	'lose_msg': {
+		'en-us': 'You lose',
+		'de': 'Verloren',
+		'ru': 'Ты проиграл'
+	},
+	'try_again': {
+		'en-us': 'Try again',
+		'de': 'Versuch es nochmal',
+		'ru': 'Попробуй еще раз'
+	},
 	'you_player_name': {
 		'en-us': 'You',
 		'de': 'Du',

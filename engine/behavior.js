@@ -102,7 +102,7 @@ var Behavior = (function() {
 					return { done: false };
 				}
 				var result = func(event.dt);
-				if (result) {
+				if (result !== undefined) {
 					return { done: true, value: result };
 				}
 

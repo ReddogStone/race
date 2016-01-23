@@ -147,7 +147,8 @@ var RootScreen = function() {
 					title: getString('level9_title'),
 					message: getString('level9_msg')
 				},
-				visibleSize: 5
+				visibleSize: 5,
+				timeLimit: 5
 			},
 			{
 				players: 1,
