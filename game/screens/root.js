@@ -43,7 +43,8 @@ var RootScreen = function() {
 				message: {
 					title: getString('level3_title'),
 					message: getString('level3_msg')
-				}
+				},
+				timeLimit: 6
 			},
 			{
 				players: 1,
@@ -60,32 +61,34 @@ var RootScreen = function() {
 				message: {
 					title: getString('level4_title'),
 					message: getString('level4_msg')
-				}
+				},
+				timeLimit: 11
 			},
 			{
 				players: 1,
 				ai: 0,
 				map: [
-					"                 ",
-					" 0------0------Y ",
-					" |      |      | ",
-					" 0------0------0 ",
-					" |      |      | ",
-					" X------0------0 ",
-					"                 "
+					"              ",
+					" 0-------0--Y ",
+					" |       |  | ",
+					" 0-------0--0 ",
+					" |       |  | ",
+					" X-------0--0 ",
+					"              "
 				],
 				message: {
 					title: getString('level5_title'),
 					message: getString('level5_msg')
-				}
+				},
+				timeLimit: 11
 			},
 			{
 				players: 1,
 				ai: 0,
 				map: [
-					"                   ",
-					"      0----------0 ",
-					" 0---0|  0-------0 ",
+					" 0---0             ",
+					" |   |0----------0 ",
+					" |   ||  0-------0 ",
 					" | X-0|Y-0         ",
 					" |   00  0-0       ",
 					" 0---------0       ",
@@ -94,7 +97,8 @@ var RootScreen = function() {
 				message: {
 					title: getString('level6_title'),
 					message: getString('level6_msg')
-				}
+				},
+				timeLimit: 14
 			},
 			{
 				players: 1,
@@ -148,7 +152,7 @@ var RootScreen = function() {
 					message: getString('level9_msg')
 				},
 				visibleSize: 5,
-				timeLimit: 5
+				timeLimit: 50
 			},
 			{
 				players: 1,
@@ -191,14 +195,14 @@ var RootScreen = function() {
 		yield LoadingScreen();
 		
 		while (true) {
-			// var languageId = yield LanguageSelectionScreen();
-			// getString = Localization(STRINGS, languageId);
+			var languageId = yield LanguageSelectionScreen();
+			getString = Localization(STRINGS, languageId);
 
 			var levels = getLevels();
 
-			// yield TitleScreen();
+			yield TitleScreen();
 
-			for (var i = 8; i < levels.length; i++) {
+			for (var i = 6; i < levels.length; i++) {
 				var level = levels[i];
 				yield MainScreen(level);
 			}

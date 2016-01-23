@@ -11,7 +11,7 @@ var STRINGS = {
 	},
 	'finish_msg': {
 		'en-us': '{1} finished',
-		'de': '{1} im Ziel',
+		'de': '{1} bist im Ziel',
 		'ru': '{1} у цели'
 	},
 	'lose_msg': {
