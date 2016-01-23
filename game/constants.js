@@ -83,6 +83,7 @@ var SPEED_TOKEN_STYLE = {
 	stroke: '#606060',
 	active: '#F0F000',
 	inactive: 'black',
+	bg: '#F0F0F0',
 	lineWidth: 5,
 	width: 10,
 	height: 50,

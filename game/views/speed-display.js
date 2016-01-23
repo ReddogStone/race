@@ -1,6 +1,6 @@
 var SpeedDisplay = function() {
 	var SIZE = vec(
-		MAX_PLAYER_SPEED * SPEED_TOKEN_STYLE.width + (MAX_PLAYER_SPEED + 2) * SPEED_TOKEN_STYLE.margin,
+		MAX_PLAYER_SPEED * SPEED_TOKEN_STYLE.width + (MAX_PLAYER_SPEED + 1) * SPEED_TOKEN_STYLE.margin,
 		SPEED_TOKEN_STYLE.height + 2 * SPEED_TOKEN_STYLE.margin
 	);
 
@@ -9,7 +9,7 @@ var SpeedDisplay = function() {
 			return SIZE;
 		},
 		render: function(context, speed, maxSpeed) {
-			PrimitiveRenderer.rect(context, { stroke: SPEED_TOKEN_STYLE.stroke }, SIZE);
+			PrimitiveRenderer.rect(context, { stroke: SPEED_TOKEN_STYLE.stroke, fill: SPEED_TOKEN_STYLE.bg }, SIZE);
 
 			renderTranslated(context, SPEED_TOKEN_STYLE.margin, SPEED_TOKEN_STYLE.margin, function(context) {
 				var x = 0;
