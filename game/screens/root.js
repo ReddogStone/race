@@ -186,7 +186,11 @@ var RootScreen = function() {
 					"     |0-0    0----0  |         ",
 					"     00 00   0-0  |  |         ",
 					"         0-----0  0--0         ",
-				]
+				],
+				message: {
+					title: getString('level11_title'),
+					message: getString('level11_msg')
+				},
 			}
 		];
 	}
