@@ -1,4 +1,4 @@
-var RaceUi = function(sceneDescriptions) {
+var RaceUi = function() {
 	var winMessageBox = null;
 	var startMessageBox = null;
 

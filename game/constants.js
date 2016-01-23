@@ -78,3 +78,13 @@ var BUTTON_STYLE = {
 	highlighted: 'green',
 	pressed: 'red'
 };
+
+var SPEED_TOKEN_STYLE = {
+	stroke: '#606060',
+	active: '#F0F000',
+	inactive: 'black',
+	lineWidth: 5,
+	width: 10,
+	height: 50,
+	margin: 10
+};

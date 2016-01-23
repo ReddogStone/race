@@ -13,6 +13,8 @@ var MainScreen = function(level) {
 	var playerCollision = PlayerCollision(playerLogic);
 	var miniMapView = MiniMapView(map, visibleSize);
 	var mapView = MapView(map);
+	var raceUi = RaceUi();
+	var speedDisplay = SpeedDisplay();
 
 	var timeText = entities.add({
 		pos: vec(20, 640),
@@ -100,8 +102,6 @@ var MainScreen = function(level) {
 			players[1].name = getString('opponent_player_name');
 		}
 	}
-
-	var raceUi = RaceUi(sceneDescriptions);
 
 	function update(dt) {
 		for (var i = 0; i < players.length; i++) {
@@ -201,8 +201,13 @@ var MainScreen = function(level) {
 
 		var player = players[mainPlayerIndex];
 		var inputDisplaySize = player.inputDisplay.size();
-		renderPivotTransformed(context, off.x, canvas.height - 50, 0, 1, inputDisplaySize.x * 0.5, inputDisplaySize.y, function(context) {
+		renderPivotTransformed(context, off.x, canvas.height - 110, 0, 1, inputDisplaySize.x * 0.5, inputDisplaySize.y, function(context) {
 			player.inputDisplay.render(context);
+		});
+
+		var speedDisplaySize = speedDisplay.size();
+		renderPivotTransformed(context, off.x, canvas.height - 20, 0, 1, speedDisplaySize.x * 0.5, speedDisplaySize.y, function(context) {
+			speedDisplay.render(context, player.speed, player.maxSpeed);
 		});
 
 		FrameProfiler.start('MiniMapView');

@@ -190,14 +190,14 @@ var RootScreen = function() {
 		yield LoadingScreen();
 		
 		while (true) {
-			var languageId = yield LanguageSelectionScreen();
-			getString = Localization(STRINGS, languageId);
+			// var languageId = yield LanguageSelectionScreen();
+			// getString = Localization(STRINGS, languageId);
 
 			var levels = getLevels();
 
-			yield TitleScreen();
+			// yield TitleScreen();
 
-			for (var i = 0; i < levels.length; i++) {
+			for (var i = 8; i < levels.length; i++) {
 				var level = levels[i];
 				yield MainScreen(level);
 			}

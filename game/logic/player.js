@@ -1,7 +1,7 @@
 var PlayerLogic = function(behaviorSystem) {
 	function increaseSpeed(player) {
-		var newSpeed = Math.min(player.speed + 1, MAX_PLAYER_SPEED);
-		player.shownSpeed = newSpeed;
+		var newSpeed = Math.min(player.maxSpeed + 1, MAX_PLAYER_SPEED);
+		player.maxSpeed = newSpeed;
 
 		behaviorSystem.add(Behavior.interval(TURN_TIME, function(progress) {
 			player.speed = progress * newSpeed;
@@ -78,6 +78,7 @@ var PlayerLogic = function(behaviorSystem) {
 		player.burnedPos = null;
 		player.dir = vec(0, 0);
 		player.speed = 0;
+		player.maxSpeed = 0;
 	}
 
 	function collideWithWalls(map, player) {
@@ -89,8 +90,8 @@ var PlayerLogic = function(behaviorSystem) {
 			toMiddle(player, 1);
 			player.burnedPos = null;
 			player.dir = vec(0, 0);
-			player.speed = Math.max(player.speed - 2, 0);
-			player.shownSpeed = player.speed;
+			player.maxSpeed = Math.max(player.maxSpeed - 2, 0);
+			player.speed = 0;
 		}
 	}
 
@@ -106,6 +107,7 @@ var PlayerLogic = function(behaviorSystem) {
 			player.mapPos = vclone(initialPos);
 			player.rotation = 0;
 			player.speed = 0;
+			player.maxSpeed = 0;
 			player.dir = vec(0, 0);
 		},
 		update: function(map, player, dt) {
