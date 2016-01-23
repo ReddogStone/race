@@ -168,10 +168,14 @@ var MainScreen = function(level) {
 			scaleInputDisplays(lerp(1, 0.6, progress));
 		}));
 
-		var winningPlayer = yield Behavior.first(
-			Behavior.update(update),
-			Behavior.forever(function(event) { handleKeyDown(event.keyCode); })
-		)
+		var winningPlayer = yield Behavior.until(
+			Behavior.forever(function(event) {
+				if (event.type === 'keydown') {
+					handleKeyDown(event.keyCode);
+				}
+			}),
+			Behavior.update(update)
+		);
 
 		behaviorSystem.add(raceUi.onWin(winningPlayer, Time.now() - roundStart));
 

@@ -113,17 +113,20 @@ function onload() {
 
 	var rootScreen = RootScreen();
 
+	var keysToBlock = {};
 	document.addEventListener('keydown', function(event) {
 		if (event.keyCode === 81) {
 			FrameProfiler.toggle();
 		}
 
-		rootScreen(event);
+		if (!keysToBlock[event.keyCode]) {
+			rootScreen(event);
+		}
+		keysToBlock[event.keyCode] = true;
 	}, false);
-	document.addEventListener('keypress', function(event) {
-		rootScreen(event);
-	}, false);
+	document.addEventListener('keypress', rootScreen, false);
 	document.addEventListener('keyup', function(event) {
+		keysToBlock[event.keyCode] = false;
 		rootScreen(event);
 	}, false);
 
