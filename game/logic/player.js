@@ -64,6 +64,12 @@ var PlayerLogic = function(behaviorSystem) {
 		toMiddle(player, 1);
 	}
 
+	function accelerate(player, dt) {
+		if (player.maxSpeed > player.speed) {
+			player.speed += Math.min(dt * 1, player.maxSpeed - player.speed);
+		}
+	}
+
 	function move(player, dt) {
 		var delta = vscale(player.dir, dt * (PLAYER_BASE_SPEED + PLAYER_SPEED_SCALE * player.speed));
 		player.mapPos = vadd(player.mapPos, delta);
@@ -111,6 +117,7 @@ var PlayerLogic = function(behaviorSystem) {
 			player.dir = vec(0, 0);
 		},
 		update: function(map, player, dt) {
+			accelerate(player, dt);
 			move(player, dt);
 
 			if (checkWin(map, player)) {

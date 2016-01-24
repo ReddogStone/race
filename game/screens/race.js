@@ -101,7 +101,7 @@ var RaceScreen = function(behaviorSystem, level) {
 			aiSystem.update(map, aiPlayer, roundStart);
 		}
 
-		playerCollision.update(players);
+		playerCollision.update(players, dt);
 	}
 
 	function handleKeyDown(key) {
