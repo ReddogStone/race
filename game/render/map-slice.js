@@ -29,11 +29,6 @@ var MapSlice = function() {
 		context.fill();
 	}
 
-	function renderBackgroundCell(context) {
-		context.fillStyle = MAP_STYLE.bg;
-		context.fillRect(-0.5 - off, -0.5 - off, 1 + 2 * off, 1 + 2 * off);
-	}
-
 	function renderFinish(context, rotation) {
 		context.rotate(rotation);
 		context.drawImage(finishBuffer, -0.5 * ROAD_SIZE, -0.5, finishBuffer.width / MAP_CELL_SIZE, finishBuffer.height / MAP_CELL_SIZE);
@@ -63,8 +58,6 @@ var MapSlice = function() {
 	}
 
 	function renderCell(context, cellValue, x, y, map) {
-		renderBackgroundCell(context);
-
 		if (cellValue && (cellValue !== ' ')) {
 			renderRoad(context, map, x, y, MapLogic.isFinish(cellValue));
 		}

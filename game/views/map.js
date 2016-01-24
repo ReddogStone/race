@@ -65,6 +65,10 @@ var MapView = function(map) {
 			CameraRenderer.viewport(context, viewport.x, viewport.y, viewport.sx, viewport.sy, function(context) {
 				renderTranslated(context, offset.x, offset.y, function(context) {
 					CameraRenderer.transform(context, mainPlayer.mapPos, 0, MAP_CELL_SIZE, function(context) {
+						renderTranslated(context, left, top, function(context) {
+							PrimitiveRenderer.rect(context, { fill: MAP_STYLE.bg }, vec(right - left, bottom - top));
+						});
+
 						var mapSize = MapLogic.getSize(map);
 						mapSlice.render(context, map, left, top, right, bottom);
 
