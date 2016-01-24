@@ -18,10 +18,11 @@ var RaceUi = function() {
 	}
 
 	return {
-		showStartMessage: function(title, message) {
+		showStartMessage: function(title, message, mission) {
 			startMessageBox = {
 				title: title,
 				message: message,
+				mission: mission,
 				textAlpha: 0,
 				boxAlpha: 1
 			};
@@ -135,6 +136,11 @@ var RaceUi = function() {
 							StringRenderer.render(context, line, messageHeight, MAIN_FONT, color, vec(0, 0));
 						});
 						y += messageHeight * 1.2;
+					});
+
+					y += messageHeight;
+					renderTranslated(context, 0, y, function(context) {
+						StringRenderer.render(context, startMessageBox.mission, messageHeight, MAIN_FONT, color, vec(0.5, 0));
 					});
 
 					context.globalAlpha = 1;

@@ -1,6 +1,13 @@
 var MainScreen = function(level) {
 	var startMessage = level.message;
 
+	var mission = getString('find_finish_mission');
+	if (level.timeLimit) {
+		mission = getString('time_limit_mission', level.timeLimit);
+	} else if (level.ai > 0) {
+		mission = getString('come_first_mission');
+	}
+
 	var behaviorSystem = BehaviorSystem();
 
 	var raceUi = RaceUi();
@@ -8,7 +15,7 @@ var MainScreen = function(level) {
 	
 	var round = Behavior.run(function*() {
 		if (startMessage) {
-			yield raceUi.showStartMessage(startMessage.title, startMessage.message);
+			yield raceUi.showStartMessage(startMessage.title, startMessage.message, mission);
 		}
 
 		var result = { win: false };

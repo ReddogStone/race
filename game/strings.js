@@ -24,6 +24,21 @@ var STRINGS = {
 		'de': 'Versuch es nochmal',
 		'ru': 'Попробуй еще раз'
 	},
+	'find_finish_mission': {
+		'en-us': 'Get to the finish',
+		'de': 'Erreiche das Ziel',
+		'ru': 'Достигни цели'
+	},
+	'time_limit_mission': {
+		'en-us': 'Get to the finish in {1}s',
+		'de': 'Erreiche das Ziel in {1}s',
+		'ru': 'Достигни цели за {1}сек'
+	},
+	'come_first_mission': {
+		'en-us': 'Get to the finish first',
+		'de': 'Erreiche das Ziel als erste(r)',
+		'ru': 'Достигни цели первой/первым'
+	},	
 	'you_player_name': {
 		'en-us': 'You',
 		'de': 'Du',
