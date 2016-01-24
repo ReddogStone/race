@@ -10,7 +10,11 @@ var MouseInputArea = function(pos, size, anchor) {
 
 		var state = MouseInputArea.DEFAULT;
 		function notifyState() {
-			var newState = isDown ? MouseInputArea.PRESSED : (isHighlighted ? MouseInputArea.HIGHLIGHTED : MouseInputArea.DEFAULT);
+			var newState = MouseInputArea.DEFAULT;
+			if (isHighlighted) {
+				newState = isDown ? MouseInputArea.PRESSED : MouseInputArea.HIGHLIGHTED;
+			}
+
 			if (newState !== state) {
 				state = newState;
 				onStateChanged(newState);
