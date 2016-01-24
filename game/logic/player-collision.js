@@ -1,4 +1,9 @@
 var PlayerCollision = function(playerLogic) {
+	var TARGET_DIST = 6 * PLAYER_GEOMETRY.size;
+	var HARDNESS = 10;
+	var ACCEL_CONST = PLAYER_ACCELERATION * Math.pow(TARGET_DIST, HARDNESS);
+	var CAP = 50;
+
 	function backOffAndHalt(player) {
 		playerLogic.backOff(player, 0.2, 1);
 		playerLogic.halt(player);
@@ -21,8 +26,9 @@ var PlayerCollision = function(playerLogic) {
 
 			backOffAndHalt(player1);
 		} else if ((dot === 1) && (player1.speed > player2.speed)) {
-			if (dist > 4 * PLAYER_GEOMETRY.size) { return; }
-			player1.speed -= (PLAYER_DECCELERATION / dirDist) * dt;
+			if (dist > 2 * TARGET_DIST) { return; }
+			var decceleration = Math.min(ACCEL_CONST / Math.pow(dirDist, HARDNESS), CAP);
+			player1.speed -= decceleration * dt;
 		}
 	}
 
