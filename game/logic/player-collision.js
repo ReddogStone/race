@@ -22,7 +22,6 @@ var PlayerCollision = function(playerLogic) {
 			backOffAndHalt(player1);
 		} else if ((dot === 1) && (player1.speed > player2.speed)) {
 			if (dist > 4 * PLAYER_GEOMETRY.size) { return; }
-			console.log(dirDist);
 			player1.speed -= (PLAYER_DECCELERATION / dirDist) * dt;
 		}
 	}
