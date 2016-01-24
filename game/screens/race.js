@@ -155,7 +155,7 @@ var RaceScreen = function(behaviorSystem, level) {
 			}),
 			Behavior.until(
 				Behavior.forever(function(event) {
-					if (event.type === 'keydown') {
+					if ((event.type === 'keydown') || (event.type === 'keyup')) {
 						handleKeyDown(event.keyCode);
 					}
 				}),
