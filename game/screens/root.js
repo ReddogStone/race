@@ -179,17 +179,17 @@ var RootScreen = function() {
 				map: [
 					"                               ",
 					"                               ",
-					"   0--0                        ",
-					"   |  |                        ",
-					" X-0--0-0---0   0------------Y ",
-					"        |   |   |              ",
-					"        0---0---0              ",
+					"   0--0 0---0-0                ",
+					"   |  | |   | |                ",
+					" X-0--0-0   0-0--------------Y ",
+					"        |   | |                ",
+					"        0---0-0                ",
 					"                               ",
 					"                               ",
 				],
 				message: {
-					title: getString('level11_title'),
-					message: getString('level11_msg')
+					title: getString('level10_title'),
+					message: getString('level10_msg')
 				},
 			},
 			{
@@ -217,13 +217,13 @@ var RootScreen = function() {
 	return Screen.run(function*() {
 		yield LoadingScreen();
 
-		// var languageId = yield LanguageSelectionScreen();
-		// getString = Localization(STRINGS, languageId);
+		var languageId = yield LanguageSelectionScreen();
+		getString = Localization(STRINGS, languageId);
 
 		var levels = getLevels();
 		
 		while (true) {
-			// yield TitleScreen();
+			yield TitleScreen();
 
 			for (var i = 9; i < levels.length; i++) {
 				var level = levels[i];

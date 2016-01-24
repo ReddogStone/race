@@ -1,5 +1,5 @@
 var PlayerCollision = function(playerLogic) {
-	var TARGET_DIST = 6 * PLAYER_GEOMETRY.size;
+	var TARGET_DIST = 4 * PLAYER_GEOMETRY.size;
 	var HARDNESS = 10;
 	var ACCEL_CONST = PLAYER_ACCELERATION * Math.pow(TARGET_DIST, HARDNESS);
 	var CAP = 50;
