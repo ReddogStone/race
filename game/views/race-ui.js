@@ -150,7 +150,8 @@ var RaceUi = function() {
 
 					y += messageHeight;
 					renderTranslated(context, 0, y, function(context) {
-						StringRenderer.render(context, startMessageBox.mission, messageHeight, MAIN_FONT, color, vec(0.5, 0));
+						StringRenderer.render(context, startMessageBox.mission,
+							messageHeight, MAIN_FONT, START_MESSAGE_BOX_STYLE.missionColor, vec(0.5, 0));
 					});
 
 					context.globalAlpha = 1;

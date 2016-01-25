@@ -6,7 +6,7 @@ var STRINGS = {
 	},
 	'game_sub_title': {
 		'en-us': 'Never  Look  Back',
-		'de': 'Blicke  Nicht  Zurück',
+		'de': 'Schau  Nicht  Zurück',
 		'ru': 'Не  Оглядывайся'
 	},
 	'to_be_continued': {
@@ -75,8 +75,8 @@ var STRINGS = {
 		'ru': 'Напрямик'
 	},
 	'level1_msg': {
-		'en-us': 'How simple it is, when you can just go straight to your goal.',
-		'de': 'Wie einfach ist es, geradewegs auf dein Ziel zuzugehen.',
+		'en-us': 'How simple, when you can just go straight to your goal.',
+		'de': 'Wie einfach ist es geradewegs auf dein Ziel zuzugehen.',
 		'ru': 'Как легко, когда можно идти прямо к своей цели.'
 	},
 	'level2_title': {
@@ -85,9 +85,9 @@ var STRINGS = {
 		'ru': 'Поворот'
 	},
 	'level2_msg': {
-		'en-us': 'More often it is not that easy. Still there is nothing to fear.',
-		'de': 'Oft ist es nicht so einfach. Doch man muss keine Angst haben.',
-		'ru': 'Зачастую все не так просто. И все же бояться нечего.'
+		'en-us': 'More often it is not that easy. Some turns are unavoidable.',
+		'de': 'Oft ist es nicht so einfach. Manche Wendung lässt sich nicht vermeiden.',
+		'ru': 'Зачастую все не так просто. Некоторых поворотов не избежать.'
 	},
 	'level3_title': {
 		'en-us': 'Detour',
@@ -105,9 +105,9 @@ var STRINGS = {
 		'ru': 'Решения'
 	},
 	'level4_msg': {
-		'en-us': 'The decissions you make early on may affect your later path more than you think. Looking ahead is paramount.',
+		'en-us': 'The decissions you make early on, may affect your later path more than you think. Looking ahead is paramount.',
 		'de': 'Entscheidungen, die du bereits früh triffst können deinen späteren Weg mehr bestimmen als du denkst. Vorausschauen ist von höchster Bedeutung.',
-		'ru': 'Решения, которые ты принимаешь довольно рано, влияют на твой дальнейший путь больше, чем ты думаешь. Дальновидность очень важна.'
+		'ru': 'Решения, которые ты принимаешь сравнительно рано, влияют на твой дальнейший путь больше, чем ты думаешь. Дальновидность очень важна.'
 	},
 	'level5_title': {
 		'en-us': 'Challenges',
@@ -115,9 +115,9 @@ var STRINGS = {
 		'ru': 'Вызовы'
 	},
 	'level5_msg': {
-		'en-us': 'Given plenty of opportunities, it is easy to slack as long as you can. Facing challenges early prepares you for the later race.',
-		'de': 'Wenn du viele Möglichkeiten hast, ist es einfach auf dem leichten Weg zu bleiben, solange es geht. Herausforderungen früh anzunemhen bereitet dich auf das weitere Rennen vor.',
-		'ru': 'Когда есть много возможностей, просто оставаться на легком пути как можно дольше. Принимать вызовы рано подготавливает тебя к дальнейшей гонке.'
+		'en-us': 'Given plenty of opportunities, it is easy to go for the simple path. But facing challenges early prepares you for the later race.',
+		'de': 'Wenn du viele Möglichkeiten hast, ist es einfach auf dem leichten Weg zu bleiben. Doch wer Herausforderungen früh annimmt, ist auf das weitere Rennen besser vorbereitet.',
+		'ru': 'Когда есть много возможностей, оставаться на легком пути просто. Но принимать вызовы как можно раньше готовит тебя к дальнейшей гонке.'
 	},
 	'level6_title': {
 		'en-us': 'Experience',
@@ -125,9 +125,9 @@ var STRINGS = {
 		'ru': 'Опыт'
 	},
 	'level6_msg': {
-		'en-us': 'So, you can see where the path will take you. But only experience will teach you to assess your options correctly.',
-		'de': 'Du siehst also, wohin dein Pfad führt. Doch nur Erfahrung lehrt dich die Möglichkeiten richtig abzuwägen.',
-		'ru': 'Значит ты видишь, куда ведет твоя дорога. Но только опыт научит тебя правильно оценивать альтернативы.'
+		'en-us': 'Even when you see where the path will take you, only experience will teach you to assess your options correctly.',
+		'de': 'Du siehst vielleicht, wohin dein Pfad dich führt. Doch nur Erfahrung lehrt dich, die Möglichkeiten richtig abzuwägen.',
+		'ru': 'Возможно ты видишь, куда ведет твоя дорога. Но только опыт научит тебя правильно оценивать альтернативы.'
 	},
 	'level7_title': {
 		'en-us': 'Blindness',
@@ -145,9 +145,9 @@ var STRINGS = {
 		'ru': 'Препятствия'
 	},
 	'level8_msg': {
-		'en-us': 'Even when the goal can be seen from the start. Which obstacles can hide in the darkness of the future?',
-		'de': 'Selbst wenn das Ziel vom Beginn an zu sehen ist. Welche Hürden mögen sich in der Dunkelheit der Zukunft verstecken?',
-		'ru': 'Даже если цель видна с самого начала. Какие препятствия могут быть скрыты в темноте будущего?'
+		'en-us': 'The goal can be seen from the start. But which obstacles can hide in the darkness of the future?',
+		'de': 'Das Ziel ist gleich zu sehen. Aber welche Hürden mögen sich in der Dunkelheit der Zukunft verstecken?',
+		'ru': 'Цель видна с самого начала. Но какие препятствия могут быть скрыты в темноте будущего?'
 	},
 	'level9_title': {
 		'en-us': 'Perspective',

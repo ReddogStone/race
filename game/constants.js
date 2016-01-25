@@ -76,7 +76,8 @@ var WIN_MESSAGE_FONT_SIZE = 90;
 var START_MESSAGE_BOX_STYLE = {
 	titleFontSize: 90,
 	messageFontSize: 30,
-	textColor: PALETTE.primary[0]
+	textColor: PALETTE.primary[0],
+	missionColor: PALETTE.secondary[2]
 };
 
 var BUTTON_STYLE = {
