@@ -5,8 +5,8 @@ var SpeedArrow = (function() {
 	var LINE_WIDTH = WIN_BG_STYLE.lineWidth / MAP_CELL_SIZE;
 	var FREQUENCY = 3;
 	var STYLES = [
-		{ fill: WIN_BG_STYLE.fill, stroke: WIN_BG_STYLE.stroke, lineWidth: LINE_WIDTH },
-		{ fill: MAP_STYLE.road, stroke: MAP_STYLE.bg, lineWidth: LINE_WIDTH }
+		{ fill: SPEED_ARROW_STYLE.fill1, stroke: SPEED_ARROW_STYLE.stroke1, lineWidth: LINE_WIDTH },
+		{ fill: SPEED_ARROW_STYLE.fill2, stroke: SPEED_ARROW_STYLE.stroke2, lineWidth: LINE_WIDTH }
 	];
 
 	return {

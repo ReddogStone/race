@@ -51,13 +51,13 @@ var RaceUi = function() {
 		onStart: function() {
 		},
 		onWin: function(player, time) {
-			return showEndMessageBox(player.style.stroke, [
+			return showEndMessageBox(START_MESSAGE_BOX_STYLE.textColor, [
 				getString('finish_msg', player.name),
 				time.toFixed(2) + getString('seconds')
 			]);
 		},
 		onLose: function() {
-			return showEndMessageBox(PLAYER_STYLE.stroke, [
+			return showEndMessageBox(START_MESSAGE_BOX_STYLE.textColor, [
 				getString('lose_msg'),
 				getString('try_again')
 			]);

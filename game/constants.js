@@ -8,14 +8,14 @@ var MINIMAP_STYLE = {
 };
 
 var MAP_STYLE = {
-	road: PALETTE.primary[1],
-	bg: PALETTE.primary[2],
-	border: PALETTE.primary[1],
+	road: PALETTE.primary[2],
+	bg: PALETTE.primary[4],
+	border: PALETTE.primary[0],
 	rasterLineWidth: 0.002
 };
 
 var PLAYER_STYLE = {
-	fill: PALETTE.secondary[3],
+	fill: PALETTE.secondary[4],
 	stroke: PALETTE.secondary[0]
 };
 
@@ -31,18 +31,18 @@ var PLAYER_GEOMETRY = {
 };
 
 var SPEED_BAR_STYLE = {
-	fill: PALETTE.primary[3]
+	fill: PALETTE.primary[4]
 };
 
 var WIN_BG_STYLE = {
-	fill: PALETTE.primary[3],
+	fill: PALETTE.primary[4],
 	stroke: PALETTE.primary[0],
 	lineWidth: 5
 };
 
 var KEY_DISPLAY_STYLE = {
-	fill: PALETTE.primary[3],
-	highlighted: PALETTE.tertiary[1],
+	fill: PALETTE.primary[4],
+	highlighted: PALETTE.tertiary[2],
 	stroke: PALETTE.primary[0],
 	lineWidth: 5,
 	size: 50,
@@ -82,13 +82,20 @@ var BUTTON_STYLE = {
 
 var SPEED_TOKEN_STYLE = {
 	stroke: PALETTE.primary[0],
-	active: PALETTE.supplemental[2],
-	inactive: PALETTE.primary[2],
-	bg: PALETTE.primary[3],
+	active: PALETTE.complement[4],
+	inactive: PALETTE.primary[3],
+	bg: PALETTE.primary[4],
 	lineWidth: 5,
 	width: 10,
 	height: 50,
 	margin: 10
 };
 
-var TITLE_BG_COLOR = PALETTE.primary[2];
+var TITLE_BG_COLOR = PALETTE.primary[3];
+
+var SPEED_ARROW_STYLE = {
+	fill1: PALETTE.primary[4],
+	stroke1: PALETTE.primary[0],
+	fill2: PALETTE.primary[4],
+	stroke2: PALETTE.primary[1],
+};

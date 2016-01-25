@@ -19,10 +19,20 @@ function getColorString(name, palette) {
 	return '\t' + name + ': [' + palette.map(function(shade) { return "'" + shade + "'"; }).join(', ') + ']';
 }
 
+function getShades(palette, index) {
+	return [
+		palette[index + 4],
+		palette[index + 3],
+		palette[index],
+		palette[index + 2],
+		palette[index + 1]
+	];
+}
+
 var result = 'var PALETTE = {\n' +
-	getColorString('primary', palette.slice(0, 5)) + ',\n' +
-	getColorString('secondary', palette.slice(0, 5)) + ',\n' +
-	getColorString('tertiary', palette.slice(0, 5)) + ',\n' +
-	getColorString('complement', palette.slice(0, 5)) + '\n};';
+	getColorString('primary', getShades(palette, 0)) + ',\n' +
+	getColorString('secondary', getShades(palette, 10)) + ',\n' +
+	getColorString('tertiary', getShades(palette, 5)) + ',\n' +
+	getColorString('complement', getShades(palette, 15)) + '\n};';
 
 fs.writeFileSync(path.join('game', 'palette.js'), result);
