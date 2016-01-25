@@ -13,7 +13,7 @@ var SpeedToken = (function() {
 
 	return {
 		render: function(context, size, active) {
-			PrimitiveRenderer.rect(context, active ? ACTIVE_STYLE : INACTIVE_STYLE, size);
+			PrimitiveRenderer.roundedRect(context, active ? ACTIVE_STYLE : INACTIVE_STYLE, size, size.y * 0.1);
 		}
 	};
 })();

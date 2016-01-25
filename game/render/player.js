@@ -20,24 +20,18 @@ var PlayerRenderer = (function() {
 	return {
 		forMap: function(context, pivotX, pivotY, style) {
 			renderPlayer(context, pivotX, pivotY, style, function(context, sx, sy) {
-				context.beginPath();
-				context.rect(0, 0, sx, sy);
-				context.fill();
-				context.stroke();
+				PrimitiveRenderer.roundedRect(context, style, vec(sx, sy), sy * 0.1);
 			});
 		},
 		withSpeedBar: function(context, pivotX, pivotY, style, speedPercentage) {
 			renderPlayer(context, pivotX, pivotY, style, function(context, sx, sy) {
-				context.beginPath();
-				context.rect(0, 0, sx, sy);
-				context.fill();
-				context.stroke();
+				PrimitiveRenderer.roundedRect(context, style, vec(sx, sy), sy * 0.2);
 
-				context.fillStyle = SPEED_BAR_STYLE.fill;
+/*				context.fillStyle = SPEED_BAR_STYLE.fill;
 				context.beginPath();
 				context.rect(0, 0, sx * speedPercentage, sy);
 				context.fill();
-				context.stroke();
+				context.stroke(); */
 			});
 		},
 		forMinimap: function(context, style) {

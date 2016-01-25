@@ -21,6 +21,20 @@ var PrimitiveRenderer = (function() {
 				context.rect(0, 0, size.x, size.y);
 			});
 		},
+		roundedRect: function(context, style, size, r) {
+			r = r || 0;
+			drawPath(context, style, function() {
+				context.moveTo(r, 0);
+				context.lineTo(size.x - r, 0);
+				context.arcTo(size.x, 0, size.x, r, r);
+				context.lineTo(size.x, size.y - r);
+				context.arcTo(size.x, size.y, size.x - r, size.y, r);
+				context.lineTo(r, size.y);
+				context.arcTo(0, size.y, 0, size.y - r, r);
+				context.lineTo(0, r);
+				context.arcTo(0, 0, r, 0, r);
+			});
+		},
 		circle: function(context, style, radius) {
 			drawPath(context, style, function() {
 				context.arc(radius, radius, radius, 0, 2 * Math.PI);

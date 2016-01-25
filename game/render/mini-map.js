@@ -44,15 +44,14 @@ var MiniMapRenderer = (function() {
 	}
 
 	function renderBorder(context, mapSx, mapSy) {
-		context.fillStyle = MINIMAP_STYLE.bg;
-		context.strokeStyle = MINIMAP_STYLE.border;
-		context.lineWidth = MINIMAP_STYLE.lineWidth;
+		var style = {
+			fill: MINIMAP_STYLE.bg,
+			stroke: MINIMAP_STYLE.border,
+			lineWidth: MINIMAP_STYLE.lineWidth
+		};
 
 		renderTranslated(context, -1.5, -1.5, function(context) {
-			context.beginPath();
-			context.rect(0, 0, mapSx + 2, mapSy + 2);
-			context.fill();
-			context.stroke();
+			PrimitiveRenderer.rect(context, style, vec(mapSx + 2, mapSy + 2));
 		});
 	}
 

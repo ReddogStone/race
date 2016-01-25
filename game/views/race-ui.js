@@ -2,6 +2,16 @@ var RaceUi = function() {
 	var endMessageBox = null;
 	var startMessageBox = null;
 
+	function messageRect(context, size) {
+		PrimitiveRenderer.roundedRect(context, WIN_BG_STYLE, size, size.y * 0.1);
+
+		var border = size.y * 0.02;
+		renderTranslated(context, border, border, function(context) {
+			var s = vsub(size, vec(2 * border, 2 * border));
+			PrimitiveRenderer.roundedRect(context, WIN_TEXT_AREA_STYLE, s, s.y * 0.1);
+		});
+	}
+
 	function showEndMessageBox(color, lines) {
 		endMessageBox = {
 			color: color,
@@ -73,7 +83,7 @@ var RaceUi = function() {
 				renderTranslated(context, 0.5 * canvas.width, 0.5 * canvas.height, function(context) {
 					var rectSize = vscale(vec(1000, 400), scale);
 					renderTranslated(context, -0.5 * rectSize.x, -0.5 * rectSize.y, function(context) {
-						PrimitiveRenderer.rect(context, WIN_BG_STYLE, rectSize);
+						messageRect(context, rectSize);
 					});
 
 					renderTranslated(context, 0, -0.7 * height, function(context) {
@@ -96,7 +106,7 @@ var RaceUi = function() {
 
 					var rectSize = vscale(vec(1000, 400), scale);
 					renderTranslated(context, -0.5 * rectSize.x, -0.5 * rectSize.y, function(context) {
-						PrimitiveRenderer.rect(context, WIN_BG_STYLE, rectSize);
+						messageRect(context, rectSize);
 					});
 
 					context.globalAlpha = startMessageBox.textAlpha;

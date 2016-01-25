@@ -40,6 +40,11 @@ var WIN_BG_STYLE = {
 	lineWidth: 5
 };
 
+var WIN_TEXT_AREA_STYLE = {
+	fill: PALETTE.complement[4],
+	lineWidth: 5
+};
+
 var KEY_DISPLAY_STYLE = {
 	fill: PALETTE.primary[4],
 	highlighted: PALETTE.tertiary[2],
@@ -82,7 +87,7 @@ var BUTTON_STYLE = {
 
 var SPEED_TOKEN_STYLE = {
 	stroke: PALETTE.primary[0],
-	active: PALETTE.complement[4],
+	active: PALETTE.complement[3],
 	inactive: PALETTE.primary[3],
 	bg: PALETTE.primary[4],
 	lineWidth: 5,

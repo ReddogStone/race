@@ -9,7 +9,7 @@ var SpeedDisplay = function() {
 			return SIZE;
 		},
 		render: function(context, speed, maxSpeed) {
-			PrimitiveRenderer.rect(context, { stroke: SPEED_TOKEN_STYLE.stroke, fill: SPEED_TOKEN_STYLE.bg }, SIZE);
+			PrimitiveRenderer.roundedRect(context, { stroke: SPEED_TOKEN_STYLE.stroke, fill: SPEED_TOKEN_STYLE.bg }, SIZE, SIZE.y * 0.2);
 
 			renderTranslated(context, SPEED_TOKEN_STYLE.margin, SPEED_TOKEN_STYLE.margin, function(context) {
 				var x = 0;
