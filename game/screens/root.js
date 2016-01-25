@@ -192,25 +192,25 @@ var RootScreen = function() {
 					message: getString('level10_msg')
 				},
 			},
-			{
-				players: 1,
-				ai: 1,
-				map: [
-					"         0-----0               ",
-					"         |  0--0               ",
-					" 0---0---0  0--------0         ",
-					" |   |               |         ",
-					" X---0-------0       0-------Y ",
-					"     |       |       |         ",
-					"     |0-0    0----0  |         ",
-					"     00 00   0-0  |  |         ",
-					"         0-----0  0--0         ",
-				],
-				message: {
-					title: getString('level11_title'),
-					message: getString('level11_msg')
-				},
-			}
+			// {
+			// 	players: 1,
+			// 	ai: 1,
+			// 	map: [
+			// 		"         0-----0               ",
+			// 		"         |  0--0               ",
+			// 		" 0---0---0  0--------0         ",
+			// 		" |   |               |         ",
+			// 		" X---0-------0       0-------Y ",
+			// 		"     |       |       |         ",
+			// 		"     |0-0    0----0  |         ",
+			// 		"     00 00   0-0  |  |         ",
+			// 		"         0-----0  0--0         ",
+			// 	],
+			// 	message: {
+			// 		title: getString('level11_title'),
+			// 		message: getString('level11_msg')
+			// 	},
+			// }
 		];
 	}
 
@@ -225,10 +225,12 @@ var RootScreen = function() {
 		while (true) {
 			yield TitleScreen();
 
-			for (var i = 1; i < levels.length; i++) {
+			for (var i = 0; i < levels.length; i++) {
 				var level = levels[i];
 				yield MainScreen(level);
 			}
+
+			yield ToBeContinuedScreen();
 		}
 	});
 }

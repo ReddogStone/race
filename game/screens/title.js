@@ -21,6 +21,7 @@ var TitleScreen = function() {
 				});
 				break;
 			case 'mousedown':
+			case 'keydown':
 				return {};
 		}
 	};

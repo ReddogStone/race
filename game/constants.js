@@ -20,7 +20,7 @@ var PLAYER_STYLE = {
 };
 
 var PLAYER2_STYLE = {
-	fill: PALETTE.tertiary[3],
+	fill: PALETTE.tertiary[4],
 	stroke: PALETTE.tertiary[0]
 };
 
@@ -81,8 +81,8 @@ var START_MESSAGE_BOX_STYLE = {
 
 var BUTTON_STYLE = {
 	default: PALETTE.primary[0],
-	highlighted: PALETTE.secondary[0],
-	pressed: PALETTE.tertiary[0]
+	highlighted: PALETTE.secondary[3],
+	pressed: PALETTE.tertiary[3]
 };
 
 var SPEED_TOKEN_STYLE = {

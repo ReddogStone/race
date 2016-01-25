@@ -9,6 +9,11 @@ var STRINGS = {
 		'de': 'Blicke  Nicht  Zurück',
 		'ru': 'Не  Оглядывайся'
 	},
+	'to_be_continued': {
+		'en-us': 'To Be Continued ...',
+		'de': 'Fortsetzung Folgt ...',
+		'ru': 'Продолжение Следует ...'
+	},
 	'finish_msg': {
 		'en-us': '{1} finished',
 		'de': '{1} bist im Ziel',
