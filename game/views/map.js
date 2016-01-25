@@ -1,4 +1,4 @@
-var MapView = function(map) {
+var MapView = function(map, multiPlayer) {
 	var mapSlice = MapSlice();
 
 	function drawBorder(context, viewport, color) {
@@ -92,7 +92,7 @@ var MapView = function(map) {
 					});
 				});
 
-				drawBorder(context, viewport, mainPlayer.style.fill);
+				drawBorder(context, viewport, multiPlayer ? mainPlayer.style.stroke : MAP_STYLE.border);
 			});
 		}
 	};

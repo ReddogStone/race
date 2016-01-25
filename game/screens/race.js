@@ -10,7 +10,7 @@ var RaceScreen = function(behaviorSystem, level) {
 	var aiSystem = AiSystem(playerLogic);
 	var playerCollision = PlayerCollision(playerLogic);
 	var miniMapView = MiniMapView(map, visibleSize);
-	var mapView = MapView(map);
+	var mapView = MapView(map, playerCount > 1);
 	var speedDisplay = SpeedDisplay();
 
 	var startPos = MapLogic.getStart(map);
@@ -218,7 +218,7 @@ var RaceScreen = function(behaviorSystem, level) {
 
 			if (timeLimit) {
 				renderTranslated(context, 20, 20, function(context) {
-					StringRenderer.render(context, timeLeft.toFixed(2), 40, MAIN_FONT, WIN_BG_STYLE.fill, vec(0, 0));
+					StringRenderer.render(context, timeLeft.toFixed(2), 40, MAIN_FONT, WIN_BG_STYLE.stroke, vec(0, 0));
 				});
 			}
 		}

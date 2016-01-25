@@ -1,27 +1,34 @@
+var PALETTE = {
+	primary: ['black', 'gray', 'lightgray', 'white'],
+	secondary: ['darkgreen', 'green', 'green', 'lightgreen'],
+	tertiary: ['darkred', 'red', 'red', 'salmon'],
+	supplemental: ['darkgoldenrod', 'yellow', 'yellow', 'moccasin']
+};
+
 var MINIMAP_STYLE = {
-	fill: '#9090F0',
-	stroke: '#202060',
-	bg: '#C0C0FF',
-	border: 'black',
+	stroke: PALETTE.primary[0],
+	bg: PALETTE.primary[3],
+	border: PALETTE.primary[0],
 	lineWidth: 0.12,
 	dotRadius: 0.33,
 	outerRadius: 0.58
 };
 
 var MAP_STYLE = {
-	road: '#9090F0',
-	bg: '#202060',
+	road: PALETTE.primary[1],
+	bg: PALETTE.primary[2],
+	border: PALETTE.primary[1],
 	rasterLineWidth: 0.002
 };
 
 var PLAYER_STYLE = {
-	fill: '#90F090',
-	stroke: '#206020'
+	fill: PALETTE.secondary[3],
+	stroke: PALETTE.secondary[0]
 };
 
 var PLAYER2_STYLE = {
-	fill: '#F09090',
-	stroke: '#602020'
+	fill: PALETTE.tertiary[3],
+	stroke: PALETTE.tertiary[0]
 };
 
 var PLAYER_GEOMETRY = {
@@ -31,26 +38,26 @@ var PLAYER_GEOMETRY = {
 };
 
 var SPEED_BAR_STYLE = {
-	fill: '#F0F090'
+	fill: PALETTE.primary[3]
 };
 
 var WIN_BG_STYLE = {
-	fill: '#F0F0E0',
-	stroke: '#606020',
+	fill: PALETTE.primary[3],
+	stroke: PALETTE.primary[0],
 	lineWidth: 5
 };
 
 var KEY_DISPLAY_STYLE = {
-	fill: '#FFFFFF',
-	highlighted: '#FF0000',
-	stroke: '#606060',
+	fill: PALETTE.primary[3],
+	highlighted: PALETTE.tertiary[1],
+	stroke: PALETTE.primary[0],
 	lineWidth: 5,
 	size: 50,
 	margin: 10,
 	relativeTextSize: 0.7
 };
 
-var MAIN_FONT = 'Times';
+var MAIN_FONT = 'Verdana';
 
 var MINIMAP_CELL_SIZE = 15;
 var MAP_CELL_SIZE = 400;
@@ -66,27 +73,29 @@ var MAX_PLAYER_SPEED = 10;
 
 var TURN_TIME = 0.4;
 
-var WIN_MESSAGE_FONT_SIZE = 110;
+var WIN_MESSAGE_FONT_SIZE = 90;
 
 var START_MESSAGE_BOX_STYLE = {
-	titleFontSize: 110,
-	messageFontSize: 34,
-	textColor: 'black'
+	titleFontSize: 90,
+	messageFontSize: 30,
+	textColor: PALETTE.primary[0]
 };
 
 var BUTTON_STYLE = {
-	default: 'black',
-	highlighted: 'green',
-	pressed: 'red'
+	default: PALETTE.primary[0],
+	highlighted: PALETTE.secondary[0],
+	pressed: PALETTE.tertiary[0]
 };
 
 var SPEED_TOKEN_STYLE = {
-	stroke: '#606060',
-	active: '#F0F000',
-	inactive: 'black',
-	bg: '#F0F0F0',
+	stroke: PALETTE.primary[0],
+	active: PALETTE.supplemental[2],
+	inactive: PALETTE.primary[2],
+	bg: PALETTE.primary[3],
 	lineWidth: 5,
 	width: 10,
 	height: 50,
 	margin: 10
 };
+
+var TITLE_BG_COLOR = PALETTE.primary[2];

@@ -5,7 +5,7 @@ var TitleScreen = function() {
 				var context = event.context;
 				var canvas = context.canvas;
 
-				context.fillStyle = MAP_STYLE.road;
+				context.fillStyle = TITLE_BG_COLOR;
 				context.fillRect(0, 0, canvas.width, canvas.height);
 
 				renderText(context, {

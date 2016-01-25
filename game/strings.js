@@ -5,9 +5,9 @@ var STRINGS = {
 		'ru': 'ГОНКА'
 	},
 	'game_sub_title': {
-		'en-us': 'Never Looking Back',
-		'de': 'Blicke Nicht Zurück',
-		'ru': 'Не Оглядывайся'
+		'en-us': 'Never  Look  Back',
+		'de': 'Blicke  Nicht  Zurück',
+		'ru': 'Не  Оглядывайся'
 	},
 	'finish_msg': {
 		'en-us': '{1} finished',
@@ -21,7 +21,7 @@ var STRINGS = {
 	},
 	'try_again': {
 		'en-us': 'Try again',
-		'de': 'Versuch es nochmal',
+		'de': 'Versuche es nochmal',
 		'ru': 'Попробуй еще раз'
 	},
 	'find_finish_mission': {
