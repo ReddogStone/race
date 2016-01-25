@@ -1,10 +1,3 @@
-var PALETTE = {
-	primary: ['black', 'gray', 'lightgray', 'white'],
-	secondary: ['darkgreen', 'green', 'green', 'lightgreen'],
-	tertiary: ['darkred', 'red', 'red', 'salmon'],
-	supplemental: ['darkgoldenrod', 'yellow', 'yellow', 'moccasin']
-};
-
 var MINIMAP_STYLE = {
 	stroke: PALETTE.primary[0],
 	bg: PALETTE.primary[3],
