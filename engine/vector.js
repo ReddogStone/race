@@ -37,7 +37,11 @@ function vlen(v) {
 }
 
 function vnorm(v) {
-	return vscale(v, 1.0 / vlen(v));
+	var l = vlen(v);
+	if (l < 0.00001) {
+		return vec(0, 0);
+	}
+	return vscale(v, 1.0 / l);
 }
 
 function vdir(from, to) {

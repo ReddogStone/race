@@ -16,7 +16,8 @@ var MAP_STYLE = {
 
 var PLAYER_STYLE = {
 	fill: PALETTE.secondary[4],
-	stroke: PALETTE.secondary[0]
+	stroke: PALETTE.secondary[0],
+	lineWidth: 0.0125
 };
 
 var PLAYER2_STYLE = {
@@ -58,8 +59,8 @@ var KEY_DISPLAY_STYLE = {
 var MAIN_FONT = 'Verdana';
 
 var MINIMAP_CELL_SIZE = 15;
-var MAP_CELL_SIZE = 400;
-var MAP_ROAD_SIZE = 200;
+var MAP_CELL_SIZE = 600;
+var MAP_ROAD_SIZE = 300;
 
 var VIEW_BORDER = 10;
 
