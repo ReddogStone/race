@@ -7,15 +7,14 @@ var MainScreen = function(level) {
 	var viewport = rcoords(0, 0, w, h);
 	var offset = vec(0.5 * w, 0.5 * h);
 
-	var MAX_HOOK_LENGTH = 0.6;
-	var PULL_SPEED = 1;
+	var MAX_HOOK_LENGTH = 0.7;
+	var PULL_FORCE = 1;
 
 	var startPos = MapLogic.getStart(map);
 
 	var player = {
-		pos: startPos,
-		v: vec(0, 0),
-		a: vec(0, 0),
+		pos: vclone(startPos),
+		lastPos: vclone(startPos),
 		hook: vadd(startPos, vec(0.05, 0)),
 		radius: 0.05,
 		style: PLAYER_STYLE
@@ -76,10 +75,12 @@ var MainScreen = function(level) {
 			Behavior.update(function(dt) {
 				var delta = vsub(player.hook, player.pos);
 				var l = vlen(delta);
-				var step = dt * PULL_SPEED;
+				var step = dt * dt * PULL_FORCE;
 
 				if (l < step) {
 					player.pos = vclone(player.hook);
+				} else if (l > MAX_HOOK_LENGTH) {
+					player.pos = vsub(player.hook, vscale(delta, (MAX_HOOK_LENGTH - step) / l));
 				} else {
 					player.pos = vadd(player.pos, vscale(delta, step / l));
 				}
@@ -88,19 +89,33 @@ var MainScreen = function(level) {
 		);
 	}
 
-	var mainBehavior = Behavior.run(function*() {
-		while (true) {
-			var event = yield waitForHookThrow();
+	var mainBehavior = Behavior.first(
+		Behavior.run(function*() {
+			while (true) {
+				var event = yield waitForHookThrow();
 
-			var grip = yield waitForHookGrip();
+				player.grip = yield waitForHookGrip();
 
-			if (grip) {
-				yield pullPlayer();
+				if (player.grip) {
+					yield pullPlayer();
+					player.grip = false;
+				}
+
+				yield retractHook();
+			}
+		}),
+		Behavior.update(function(dt) {
+			var lastPos = player.pos;
+			player.pos = vadd(player.pos, vsub(player.pos, player.lastPos));
+			player.lastPos = lastPos;
+
+			if (!player.grip) {
+				player.hook = vadd(player.pos, vsub(player.hook, lastPos));
 			}
 
-			yield retractHook();
-		}
-	});
+			player.pos.y = Math.min(Math.max(player.pos.y, 1.75), 2.25);
+		})
+	)
 
 	return function(event) {
 		if (event.type !== 'show') {
