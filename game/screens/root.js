@@ -6,7 +6,7 @@ var RootScreen = function() {
 				ai: 0,
 				map: [
 					" X--------Y ",
-					" |        | ",
+					"          | ",
 					" |        | ",
 					" |        | ",
 					" |        | ",

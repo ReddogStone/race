@@ -7,8 +7,11 @@ var MainScreen = function(level) {
 	var viewport = rcoords(0, 0, w, h);
 	var offset = vec(0.5 * w, 0.5 * h);
 
-	var MAX_HOOK_LENGTH = 0.7;
+	var MIN_PULL_LENGTH = 0.3;
+	var MAX_HOOK_LENGTH = 1;
 	var PULL_FORCE = 2;
+	var GRAVITY = vec(0, 0.5);
+	var HOOK_SPEED = 5;
 
 	var startPos = MapLogic.getStart(map);
 
@@ -32,15 +35,41 @@ var MainScreen = function(level) {
 		return vadd(player.pos, vscale(dir, player.radius * 1.2));
 	}
 
-	function collide(pos) {
-		if ((pos.y > 0.5) && (pos.y < 4.5)) {
-			if ((pos.x < 0.75) || (pos.x > 1.25)) {
-				return vec(Math.min(Math.max(pos.x, 0.75), 1.25), pos.y);
+	function collide(from, to) {
+		// var limit = -0.25;
+		// if (to.y < limit) {
+		// 	return vec(Math.lerp(from.x, to.x, 0.95), limit);
+		// }
+
+		// var limit = 0.25;
+		// if (to.y > limit) {
+		// 	return vec(Math.lerp(from.x, to.x, 0.95), limit);
+		// }
+
+		var cellPos = MapLogic.getCellCoords(from);
+		var delta = vsub(to, from);
+		var roadWidth = 0.5 * MAP_ROAD_SIZE / MAP_CELL_SIZE;
+
+		var RESTITUTION = 0.95;
+
+		var yLimit = cellPos.y + Math.sign(delta.y) * roadWidth;
+		var alpha = (yLimit - from.y) / (to.y - from.y);
+		if ((alpha >= 0) && (alpha <= 1)) {
+			var xInter = Math.lerp(from.x, to.x, alpha);
+			var xRel = xInter - Math.round(xInter);
+			if ((xRel < -roadWidth) || (xRel > roadWidth) || !MapLogic.canGo(map, cellPos, vec(0, Math.sign(delta.y)))) {
+				return vec(Math.lerp(from.x, to.x, RESTITUTION), yLimit);
 			}
 		}
 
-		if ((pos.y < -0.25) || (pos.y > 5.25)) {
-			return vec(pos.x, Math.min(Math.max(pos.y, -0.25), 5.25));
+		var xLimit = cellPos.x + Math.sign(delta.x) * roadWidth;
+		var alpha = (xLimit - from.x) / (to.x - from.x);
+		if ((alpha >= 0) && (alpha <= 1)) {
+			var yInter = Math.lerp(from.y, to.y, alpha);
+			var yRel = yInter - Math.round(yInter);
+			if ((yRel < -roadWidth) || (yRel > roadWidth) || !MapLogic.canGo(map, cellPos, vec(Math.sign(delta.x), 0))) {
+				return vec(xLimit, Math.lerp(from.y, to.y, RESTITUTION));
+			}
 		}
 	}
 
@@ -58,24 +87,26 @@ var MainScreen = function(level) {
 
 	function waitForHookGrip() {
 		var hookDir = vnorm(vsub(player.hook, player.pos));
-		var startLength = player.radius;
+		var l = player.radius;
 
 		return Behavior.first(
-			Behavior.run(function*() {
-				yield Behavior.first(
-					Behavior.interval(0.2, function(progress) {
-						var l = lerp(startLength, MAX_HOOK_LENGTH, progress);
-						player.hook = vadd(player.pos, vscale(hookDir, l));
-					}),
-					Behavior.type('mouseup')
-				);
-				return false;
-			}),
 			Behavior.update(function(dt) {
-				if (collide(player.hook)) {
+				l += dt * HOOK_SPEED;
+				if (l > MAX_HOOK_LENGTH) {
+					return false;
+				}
+
+				var hookPos = vadd(player.pos, vscale(hookDir, l));
+
+				var collisionPos = collide(player.hook, hookPos);
+				if (collisionPos) {
+					player.hook = collisionPos;
 					return true;
 				}
-			})
+
+				player.hook = hookPos;
+			}),
+			Behavior.type('mouseup')
 		);
 	}
 
@@ -123,10 +154,10 @@ var MainScreen = function(level) {
 		}),
 		Behavior.update(function(dt) {
 			var lastPos = player.pos;
-			player.pos = vadd(vadd(player.pos, vsub(player.pos, player.lastPos)), vscale(vec(0, 1), dt * dt));
+			player.pos = vadd(vadd(player.pos, vsub(player.pos, player.lastPos)), vscale(GRAVITY, dt * dt));
 			player.lastPos = lastPos;
 
-			var collisionPos = collide(player.pos);
+			var collisionPos = collide(lastPos, player.pos);
 			if (collisionPos) {
 				player.pos = collisionPos;
 			}
