@@ -165,15 +165,20 @@ var MainScreen = function(level) {
 			if (!player.grip) {
 				player.hook = vadd(player.pos, vsub(player.hook, lastPos));
 			}
+
+			if (MapLogic.isFinish(MapLogic.getCell(map, player.pos))) {
+				console.log('FINISH');
+				return true;
+			}
 		})
 	)
 
 	return function(event) {
 		if (event.type !== 'show') {
 			var result = mainBehavior(event);
-			// if (result.done) {
-			// 	return result;
-			// }
+			if (result.done) {
+				return result;
+			}
 		} else {
 			var context = event.context;
 			var canvas = context.canvas;
