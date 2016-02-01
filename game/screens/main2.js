@@ -8,7 +8,7 @@ var MainScreen = function(level) {
 	var offset = vec(0.5 * w, 0.5 * h);
 
 	var MAX_HOOK_LENGTH = 0.7;
-	var PULL_FORCE = 1;
+	var PULL_FORCE = 2;
 
 	var startPos = MapLogic.getStart(map);
 
@@ -20,20 +20,36 @@ var MainScreen = function(level) {
 		style: PLAYER_STYLE
 	};
 
-	function toWorldSpace(p) {
+	function toWorldSpace(player, p) {
 		return vadd(vscale(vsub(p, offset), 1 / MAP_CELL_SIZE), player.pos);
 	}
 
 	var getMouseEvent = Behavior.filter(function(event) { return (['mousemove', 'mousedown'].indexOf(event.type) >= 0) });
+
+	function getHookPos(player, mousePos) {
+		var worldPos = toWorldSpace(player, mousePos);
+		var dir = vnorm(vsub(worldPos, player.pos));
+		return vadd(player.pos, vscale(dir, player.radius * 1.2));
+	}
+
+	function collide(pos) {
+		if ((pos.y > 0.5) && (pos.y < 4.5)) {
+			if ((pos.x < 0.75) || (pos.x > 1.25)) {
+				return vec(Math.min(Math.max(pos.x, 0.75), 1.25), pos.y);
+			}
+		}
+
+		if ((pos.y < -0.25) || (pos.y > 5.25)) {
+			return vec(pos.x, Math.min(Math.max(pos.y, -0.25), 5.25));
+		}
+	}
 
 	function waitForHookThrow() {
 		return Behavior.first(
 			Behavior.run(function*() {
 				while (true) {
 					var event = yield Behavior.type('mousemove');
-					var mousePos = toWorldSpace(event.pos);
-					var dir = vnorm(vsub(mousePos, player.pos));
-					player.hook = vadd(player.pos, vscale(dir, player.radius * 1.2));
+					player.hook = getHookPos(player, event.pos);
 				}
 			}),
 			Behavior.type('mousedown')
@@ -47,7 +63,7 @@ var MainScreen = function(level) {
 		return Behavior.first(
 			Behavior.run(function*() {
 				yield Behavior.first(
-					Behavior.interval(0.5, function(progress) {
+					Behavior.interval(0.2, function(progress) {
 						var l = lerp(startLength, MAX_HOOK_LENGTH, progress);
 						player.hook = vadd(player.pos, vscale(hookDir, l));
 					}),
@@ -56,7 +72,7 @@ var MainScreen = function(level) {
 				return false;
 			}),
 			Behavior.update(function(dt) {
-				if ((player.hook.y < 1.75) || (player.hook.y > 2.25)) {
+				if (collide(player.hook)) {
 					return true;
 				}
 			})
@@ -93,6 +109,7 @@ var MainScreen = function(level) {
 		Behavior.run(function*() {
 			while (true) {
 				var event = yield waitForHookThrow();
+				player.hook = getHookPos(player, event.pos);
 
 				player.grip = yield waitForHookGrip();
 
@@ -106,14 +123,17 @@ var MainScreen = function(level) {
 		}),
 		Behavior.update(function(dt) {
 			var lastPos = player.pos;
-			player.pos = vadd(player.pos, vsub(player.pos, player.lastPos));
+			player.pos = vadd(vadd(player.pos, vsub(player.pos, player.lastPos)), vscale(vec(0, 1), dt * dt));
 			player.lastPos = lastPos;
+
+			var collisionPos = collide(player.pos);
+			if (collisionPos) {
+				player.pos = collisionPos;
+			}
 
 			if (!player.grip) {
 				player.hook = vadd(player.pos, vsub(player.hook, lastPos));
 			}
-
-			player.pos.y = Math.min(Math.max(player.pos.y, 1.75), 2.25);
 		})
 	)
 
