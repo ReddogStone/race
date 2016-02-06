@@ -5,12 +5,12 @@ var RootScreen = function() {
 				players: 1,
 				ai: 0,
 				map: [
-					" X--------0 ",
-					"          | ",
-					" Y        | ",
-					" |        | ",
-					" |        | ",
-					" 0--------0 ",
+					"X000000000",
+					"0000000000",
+					"        00",
+					"Y       00",
+					"0000000000",
+					"0000000000",
 				],
 				message: {
 					title: getString('level1_title'),

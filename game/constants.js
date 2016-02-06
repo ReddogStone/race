@@ -11,13 +11,13 @@ var MAP_STYLE = {
 	road: PALETTE.primary[2],
 	bg: PALETTE.primary[4],
 	border: PALETTE.primary[0],
-	rasterLineWidth: 0.002
+	rasterLineWidth: 0.01
 };
 
 var PLAYER_STYLE = {
 	fill: PALETTE.secondary[4],
 	stroke: PALETTE.secondary[0],
-	lineWidth: 0.0125
+	lineWidth: 0.05
 };
 
 var PLAYER2_STYLE = {
@@ -59,8 +59,8 @@ var KEY_DISPLAY_STYLE = {
 var MAIN_FONT = 'Verdana';
 
 var MINIMAP_CELL_SIZE = 15;
-var MAP_CELL_SIZE = 600;
-var MAP_ROAD_SIZE = 300;
+var MAP_CELL_SIZE = 100;
+var MAP_ROAD_SIZE = 100;
 
 var VIEW_BORDER = 10;
 

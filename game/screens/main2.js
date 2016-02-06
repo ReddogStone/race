@@ -8,9 +8,9 @@ var MainScreen = function(level) {
 	var offset = vec(0.5 * w, 0.5 * h);
 
 	var MIN_PULL_LENGTH = 0.3;
-	var MAX_HOOK_LENGTH = 1;
-	var PULL_FORCE = 2;
-	var GRAVITY = vec(0, 0.5);
+	var MAX_HOOK_LENGTH = 4;
+	var PULL_FORCE = 0.5;
+	var GRAVITY = vec(0, 0);
 	var HOOK_SPEED = 5;
 
 	var startPos = MapLogic.getStart(map);
@@ -19,7 +19,7 @@ var MainScreen = function(level) {
 		pos: vclone(startPos),
 		lastPos: vclone(startPos),
 		hook: vadd(startPos, vec(0.05, 0)),
-		radius: 0.05,
+		radius: 0.4,
 		style: PLAYER_STYLE
 	};
 
@@ -35,41 +35,82 @@ var MainScreen = function(level) {
 		return vadd(player.pos, vscale(dir, player.radius * 1.2));
 	}
 
-	function collide(from, to) {
-		// var limit = -0.25;
-		// if (to.y < limit) {
-		// 	return vec(Math.lerp(from.x, to.x, 0.95), limit);
-		// }
+	function intersectRay(start, dir, l) {
+		var result = 0;
 
-		// var limit = 0.25;
-		// if (to.y > limit) {
-		// 	return vec(Math.lerp(from.x, to.x, 0.95), limit);
-		// }
+		var current = vclone(start);
+		var currentTile = vmap(current, Math.round);
+		var step = vmap(dir, Math.sign);
 
-		var cellPos = MapLogic.getCellCoords(from);
-		var delta = vsub(to, from);
-		var roadWidth = 0.5 * MAP_ROAD_SIZE / MAP_CELL_SIZE;
+		while (result < l) {
+			if (MapLogic.isWall(MapLogic.getCell(map, currentTile))) {
+				return {
+					alpha: result,
+					tile: currentTile
+				};
+			}
 
-		var RESTITUTION = 0.95;
+			var delta = vsub(vadd(currentTile, vscale(step, 0.5)), current);
+			var alphas = vdiv(delta, dir);
 
-		var yLimit = cellPos.y + Math.sign(delta.y) * roadWidth;
-		var alpha = (yLimit - from.y) / (to.y - from.y);
-		if ((alpha >= 0) && (alpha <= 1)) {
-			var xInter = Math.lerp(from.x, to.x, alpha);
-			var xRel = xInter - Math.round(xInter);
-			if ((xRel < -roadWidth) || (xRel > roadWidth) || !MapLogic.canGo(map, cellPos, vec(0, Math.sign(delta.y)))) {
-				return vec(Math.lerp(from.x, to.x, RESTITUTION), yLimit);
+			if (alphas.x < alphas.y) {
+				current = vadd(current, vscale(dir, alphas.x));
+				currentTile.x += step.x;
+				result += alphas.x;
+			} else if (alphas.y < alphas.x) {
+				current = vadd(current, vscale(dir, alphas.y));
+				currentTile.y += step.y;
+				result += alphas.y;
+			} else {
+				current = vadd(current, vscale(dir, alphas.x));
+				currentTile = vadd(currentTile, step);
+				result += alphas.x;
 			}
 		}
 
-		var xLimit = cellPos.x + Math.sign(delta.x) * roadWidth;
-		var alpha = (xLimit - from.x) / (to.x - from.x);
-		if ((alpha >= 0) && (alpha <= 1)) {
-			var yInter = Math.lerp(from.y, to.y, alpha);
-			var yRel = yInter - Math.round(yInter);
-			if ((yRel < -roadWidth) || (yRel > roadWidth) || !MapLogic.canGo(map, cellPos, vec(Math.sign(delta.x), 0))) {
-				return vec(xLimit, Math.lerp(from.y, to.y, RESTITUTION));
-			}
+		return {
+			alpha: result
+		};
+	}
+
+	function collideWithTile(tile, start, dir, l, radius) {
+		var step = vmap(dir, Math.sign);
+		var corner = vsub(tile, vscale(step, 0.5 + radius));
+		var delta = vsub(corner, start);
+
+		var alphas = vflip(vdiv(delta, dir));
+
+		var inter = vadd(start, vmul(alphas, dir));
+
+		if ((alphas.x <= l) && (Math.abs(inter.x - tile.x) < 0.5 + radius)) {
+			return {
+				pos: vec(inter.x, start.y + delta.y),
+				normal: vec(0, -step.y)
+			};
+		} else if ((alphas.y <= l) && (Math.abs(inter.y - tile.y) < 0.5 + radius)) {
+			return {
+				pos: vec(start.x + delta.x, inter.y),
+				normal: vec(-step.x, 0)
+			};
+		}
+	}
+
+	function collide(from, to, radius) {
+		if (veq(from, to)) { return; }
+
+		var delta = vsub(to, from);
+		var l = vlen(delta);
+		var dir = vscale(delta, 1 / l);
+		var off1 = vscale(vec(dir.y, -dir.x), radius);
+		var off2 = vscale(vec(-dir.y, dir.x), radius);
+
+		var inter1 = intersectRay(vadd(from, off1), dir, l + 2 * radius);
+		var inter2 = intersectRay(vadd(from, off2), dir, l + 2 * radius);
+
+		var minInter = inter1.alpha < inter2.alpha ? inter1 : inter2;
+		if (minInter.alpha <= l + 2 * radius) {
+			console.log('Collision:', minInter.tile);
+			return collideWithTile(minInter.tile, from, dir, l, radius);
 		}
 	}
 
@@ -98,15 +139,18 @@ var MainScreen = function(level) {
 
 				var hookPos = vadd(player.pos, vscale(hookDir, l));
 
-				var collisionPos = collide(player.hook, hookPos);
-				if (collisionPos) {
-					player.hook = collisionPos;
+				var collision = collide(player.hook, hookPos, 0);
+				if (collision) {
+					player.hook = collision.pos;
 					return true;
 				}
 
 				player.hook = hookPos;
 			}),
-			Behavior.type('mouseup')
+			Behavior.run(function*() {
+				yield Behavior.type('mouseup');
+				return false;
+			})
 		);
 	}
 
@@ -136,6 +180,22 @@ var MainScreen = function(level) {
 		);
 	}
 
+	function holdPlayer() {
+		var dist = vdist(player.hook, player.pos);
+
+		return Behavior.first(
+			Behavior.update(function(dt) {
+				var delta = vsub(player.hook, player.pos);
+				var l = vlen(delta);
+
+				if (l > dist) {
+					player.pos = vsub(player.hook, vscale(delta, dist / l));
+				}
+			}),
+			Behavior.type('mouseup')
+		);
+	}
+
 	var mainBehavior = Behavior.first(
 		Behavior.run(function*() {
 			while (true) {
@@ -146,6 +206,10 @@ var MainScreen = function(level) {
 
 				if (player.grip) {
 					yield pullPlayer();
+
+					// player.pos = vlerp(player.pos, player.hook, 0.001);
+					// yield holdPlayer();
+
 					player.grip = false;
 				}
 
@@ -157,9 +221,10 @@ var MainScreen = function(level) {
 			player.pos = vadd(vadd(player.pos, vsub(player.pos, player.lastPos)), vscale(GRAVITY, dt * dt));
 			player.lastPos = lastPos;
 
-			var collisionPos = collide(lastPos, player.pos);
-			if (collisionPos) {
-				player.pos = collisionPos;
+			var collision = collide(lastPos, player.pos, player.radius);
+			if (collision) {
+				var v = vsub(collision.pos, player.lastPos);
+				player.pos = collision.pos;
 			}
 
 			if (!player.grip) {

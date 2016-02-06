@@ -63,3 +63,11 @@ function vdot(v1, v2) {
 function vdist(v1, v2) {
 	return vlen(vsub(v2, v1));
 }
+
+function vmap(v, func) {
+	return vec(func(v.x), func(v.y));
+}
+
+function vflip(v) {
+	return vec(v.y, v.x);
+}

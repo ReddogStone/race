@@ -165,7 +165,7 @@ function onload() {
 	var lastT = Time.now();
 	requestAnimFrame(function show() {
 		var t = Time.now();
-		var dt = t - lastT;
+		var dt = Math.max(t - lastT, 0.033);
 		lastT = t;
 
 		FrameProfiler.startFrame();
