@@ -24,6 +24,8 @@ var MainScreen = function(level) {
 		style: PLAYER_STYLE
 	};
 
+	var startTime = 0;
+
 	function toWorldSpace(player, p) {
 		return vadd(vscale(vsub(p, offset), 1 / MAP_CELL_SIZE), player.pos);
 	}
@@ -192,6 +194,11 @@ var MainScreen = function(level) {
 		Behavior.run(function*() {
 			while (true) {
 				var event = yield waitForHookThrow();
+
+				if (!startTime) {
+					startTime = Time.now();
+				}
+
 				player.hook = getHookPos(player, event.pos);
 
 				player.grip = yield waitForHookGrip();
@@ -216,14 +223,19 @@ var MainScreen = function(level) {
 
 			var collision = collide(lastPos, player.pos, player.radius);
 			if (collision) {
-				var delta = vsub(collision.pos, player.pos);
-				player.pos = vadd(player.pos, vscale(collision.normal, 1.01 * vdot(delta, collision.normal)));
+				var v = vsub(player.pos, player.lastPos);
+				player.pos = collision.pos;
+				v = vscale(vsub(v, vscale(collision.normal, 2 * vdot(collision.normal, v))), 0.1);
+				player.lastPos = vsub(player.pos, v);
 
-				collision = collide(lastPos, player.pos, player.radius);
-				if (collision) {
-					var delta = vsub(collision.pos, player.pos);
-					player.pos = vadd(player.pos, vscale(collision.normal, 1.01 * vdot(delta, collision.normal)));
-				}
+				// var delta = vsub(collision.pos, player.pos);
+				// player.pos = vadd(player.pos, vscale(collision.normal, 1.5 * vdot(delta, collision.normal)));
+
+				// collision = collide(lastPos, player.pos, player.radius);
+				// if (collision) {
+				// 	var delta = vsub(collision.pos, player.pos);
+				// 	player.pos = vadd(player.pos, vscale(collision.normal, 1.01 * vdot(delta, collision.normal)));
+				// }
 			}
 
 			if (!player.grip) {
@@ -233,7 +245,8 @@ var MainScreen = function(level) {
 			player.acceleration = vec(0, 0);
 
 			if (MapLogic.isFinish(MapLogic.getCell(map, player.pos))) {
-				console.log('FINISH');
+//				console.log('');
+				alert(Time.now() - startTime);
 				return true;
 			}
 		})
