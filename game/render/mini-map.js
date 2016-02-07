@@ -9,22 +9,27 @@ var MiniMapRenderer = (function() {
 		var sqrt2 = Math.sqrt(2);
 		switch (cellValue) {
 			case '0':
-				context.arc(0, 0, MINIMAP_STYLE.dotRadius, 0, 2 * Math.PI);
+				context.rect(-0.5, -0.5, 1, 1);
 				break;
 			case 'X':
-				context.arc(0, 0, MINIMAP_STYLE.outerRadius, 0, 2 * Math.PI);
+				context.rect(-0.5, -0.5, 1, 1);
+				context.fill();
+
+				context.beginPath();
 				context.moveTo(-0.25 * sqrt2, -0.25 * sqrt2);
 				context.lineTo(0.25 * sqrt2, 0.25 * sqrt2);
 				context.moveTo(0.25 * sqrt2, -0.25 * sqrt2);
 				context.lineTo(-0.25 * sqrt2, 0.25 * sqrt2);
-				break;
-			case 'Y':
-				context.arc(0, 0, MINIMAP_STYLE.dotRadius, 0, 2 * Math.PI);
-				context.fill();
 				context.stroke();
 
 				context.beginPath();
-				context.arc(0, 0, MINIMAP_STYLE.outerRadius, 0, 2 * Math.PI);
+				break;
+			case 'Y':
+				context.rect(-0.5, -0.5, 1, 1);
+				context.fill();
+
+				context.beginPath();
+				context.arc(0, 0, MINIMAP_STYLE.dotRadius, 0, 2 * Math.PI);
 				context.stroke();
 
 				context.beginPath();
@@ -40,7 +45,6 @@ var MiniMapRenderer = (function() {
 		}
 
 		context.fill();
-		context.stroke();
 	}
 
 	function renderBorder(context, mapSx, mapSy) {

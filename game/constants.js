@@ -1,5 +1,6 @@
 var MINIMAP_STYLE = {
 	stroke: PALETTE.primary[0],
+	fill: PALETTE.primary[2],
 	bg: PALETTE.primary[3],
 	border: PALETTE.primary[0],
 	lineWidth: 0.12,
@@ -59,7 +60,7 @@ var KEY_DISPLAY_STYLE = {
 var MAIN_FONT = 'Verdana';
 
 var MINIMAP_CELL_SIZE = 15;
-var MAP_CELL_SIZE = 100;
+var MAP_CELL_SIZE = 150;
 var MAP_ROAD_SIZE = 100;
 
 var VIEW_BORDER = 10;

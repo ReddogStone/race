@@ -1,11 +1,11 @@
 var MapSlice = function() {
 	var FINISH_COLS = 25;
 	var FINISH_ROWS = 3;
-	var FINISH_CELL_SIZE = MAP_ROAD_SIZE / FINISH_COLS;
+	var FINISH_CELL_SIZE = MAP_CELL_SIZE / FINISH_COLS;
 	var FINISH_FILL = 'black';
 
 	var finishBuffer = document.createElement('canvas');
-	finishBuffer.width = MAP_ROAD_SIZE;
+	finishBuffer.width = MAP_CELL_SIZE;
 	finishBuffer.height = FINISH_ROWS * FINISH_CELL_SIZE;
 
 	var finishBufferContext = finishBuffer.getContext('2d');

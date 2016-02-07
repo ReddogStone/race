@@ -1,6 +1,7 @@
-var MainScreen = function(level) {
+var MainScreen2 = function(level) {
 	var map = level.map;
 	var mapSlice = MapSlice();
+	var miniMapView = MiniMapView(map);
 
 	var w = 1280;
 	var h = 720;
@@ -225,7 +226,7 @@ var MainScreen = function(level) {
 			if (collision) {
 				var v = vsub(player.pos, player.lastPos);
 				player.pos = collision.pos;
-				v = vscale(vsub(v, vscale(collision.normal, 2 * vdot(collision.normal, v))), 0.1);
+				v = vscale(vsub(v, vscale(collision.normal, 2 * vdot(collision.normal, v))), 0.2);
 				player.lastPos = vsub(player.pos, v);
 
 				// var delta = vsub(collision.pos, player.pos);
@@ -306,6 +307,8 @@ var MainScreen = function(level) {
 					});
 				});
 			});
+
+			miniMapView.render(context, [player], vec(640, 20));
 		}
 	};	
 }

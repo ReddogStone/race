@@ -75,39 +75,39 @@ var STRINGS = {
 		'ru': 'Напрямик'
 	},
 	'level1_msg': {
-		'en-us': 'How simple, when you can just go straight to your goal.',
-		'de': 'Wie einfach ist es geradewegs auf dein Ziel zuzugehen.',
-		'ru': 'Как легко, когда можно идти прямо к своей цели.'
+		'en-us': 'Use your grappling hook.',
+		'de': 'Benutze deinen Greiferhacken.',
+		'ru': 'Используй свой захват.'
 	},
 	'level2_title': {
-		'en-us': 'A Turn',
-		'de': 'Eine Wendung',
-		'ru': 'Поворот'
+		'en-us': 'Choice',
+		'de': 'Entscheidung',
+		'ru': 'Выбор'
 	},
 	'level2_msg': {
-		'en-us': 'More often it is not that easy. Some turns are unavoidable.',
-		'de': 'Oft ist es nicht so einfach. Manche Wendung lässt sich nicht vermeiden.',
-		'ru': 'Зачастую все не так просто. Некоторых поворотов не избежать.'
+		'en-us': 'Now you have to choose - the narrow straight tunnel or the wide detour.',
+		'de': 'Jetzt musst du wählen - der dünne gerade Tunnel oder die breite Umgehung.',
+		'ru': 'Теперь тебе нужно выбрать - узкий прямой тоннель или широкий обходной путь.'
 	},
 	'level3_title': {
-		'en-us': 'Detour',
-		'de': 'Umweg',
-		'ru': 'В Обход'
+		'en-us': 'Grand Hall',
+		'de': 'Große Halle',
+		'ru': 'Большой Зал'
 	},
 	'level3_msg': {
-		'en-us': 'Sometimes you are presented with a choice. A detour does not have to be bad at all times.',
-		'de': 'Manchmal wirst du vor eine Wahl gestellt. Ein Umweg muss nicht immer etwas schlechtes sein.',
-		'ru': 'Иногда тебя ставят перед выбором. Идти в обход - это не всегда плохо.'
+		'en-us': 'What about a nice wide hall with some pillars to hook?',
+		'de': 'Wie wär\'s mit einer schönen breiten Halle mit ein Paar Säulen zum einhacken?',
+		'ru': 'Как насчет просторного зала и нескольких колонн за которые удобно хвататься?'
 	},
 	'level4_title': {
-		'en-us': 'Decissions',
-		'de': 'Entscheidungen',
-		'ru': 'Решения'
+		'en-us': 'Bounce',
+		'de': 'Aufprall',
+		'ru': 'Столкновение'
 	},
 	'level4_msg': {
-		'en-us': 'The decissions you make early on, may affect your later path more than you think. Looking ahead is paramount.',
-		'de': 'Entscheidungen, die du bereits früh triffst können deinen späteren Weg mehr bestimmen als du denkst. Vorausschauen ist von höchster Bedeutung.',
-		'ru': 'Решения, которые ты принимаешь сравнительно рано, влияют на твой дальнейший путь больше, чем ты думаешь. Дальновидность очень важна.'
+		'en-us': 'Sometimes you have to bounce on some obstacles to get going.',
+		'de': 'Manchmal musst du an Hindernissen abprallen, um weiterzukommen.',
+		'ru': 'Иногда придеться оттолкнуться от препятствия, чтоб продолжить путь.'
 	},
 	'level5_title': {
 		'en-us': 'Challenges',

@@ -1,207 +1,258 @@
 var RaceScreen = function(behaviorSystem, level) {
 	var map = level.map;
-	var playerCount = level.players;
-	var aiCount = level.ai;
-	var visibleSize = level.visibleSize;
-	var timeLimit = level.timeLimit;
-	var timeLeft = timeLimit;
+	var mapSlice = MapSlice();
+	var miniMapView = MiniMapView(map);
 
-	var playerLogic = PlayerLogic(behaviorSystem);
-	var aiSystem = AiSystem(playerLogic);
-	var playerCollision = PlayerCollision(playerLogic);
-	var miniMapView = MiniMapView(map, visibleSize);
-	var mapView = MapView(map, playerCount > 1);
-	var speedDisplay = SpeedDisplay();
+	var w = 1280;
+	var h = 720;
+	var viewport = rcoords(0, 0, w, h);
+	var offset = vec(0.5 * w, 0.5 * h);
+
+	var MIN_PULL_LENGTH = 0.3;
+	var MAX_HOOK_LENGTH = 4;
+	var PULL_FORCE = 0.5;
+	var GRAVITY = vec(0, 0);
+	var HOOK_SPEED = 5;
 
 	var startPos = MapLogic.getStart(map);
 
-	var Dirs = {
-		LEFT: vec(-1, 0),
-		UP: vec(0, -1),
-		RIGHT: vec(1, 0),
-		DOWN: vec(0, 1)
+	var player = {
+		pos: vclone(startPos),
+		lastPos: vclone(startPos),
+		acceleration: vec(0, 0),
+		hook: vadd(startPos, vec(0.05, 0)),
+		radius: 0.4,
+		style: PLAYER_STYLE,
+
+		name: getString('you_player_name')
 	};
 
-	var KEY_MAP = {
-		// left, up, right, down
-		37: { index: 1, dir: 'LEFT' },
-		38: { index: 1, dir: 'UP' },
-		39: { index: 1, dir: 'RIGHT' },
-		40: { index: 1, dir: 'DOWN' },
+	var startTime = 0;
 
-		// a, w, d, s
-		65: { index: 0, dir: 'LEFT' },
-		87: { index: 0, dir: 'UP' },
-		68: { index: 0, dir: 'RIGHT' },
-		83: { index: 0, dir: 'DOWN' }
-	};
-
-	function makePlayer(name, style, index) {
-		var result = {
-			name: name,
-			rotation: 0,
-			anchor: vec(0.9, 0.5),
-			style: style
-		};
-		playerLogic.init(result, startPos);
-
-		result.inputDisplay = InputDisplay(KEY_MAP, index);
-
-		return result;
+	function toWorldSpace(player, p) {
+		return vadd(vscale(vsub(p, offset), 1 / MAP_CELL_SIZE), player.pos);
 	}
 
-	var roundStart = 0;
+	var getMouseEvent = Behavior.filter(function(event) { return (['mousemove', 'mousedown'].indexOf(event.type) >= 0) });
 
-	var players = [
-		makePlayer(getString('player1_name'), PLAYER_STYLE, 0),
-		makePlayer(getString('player2_name'), PLAYER2_STYLE, 1)
-	];
-
-	if (aiCount) {
-		var aiPlayer = players[playerCount];
+	function getHookPos(player, mousePos) {
+		var worldPos = toWorldSpace(player, mousePos);
+		var dir = vnorm(vsub(worldPos, player.pos));
+		return vadd(player.pos, vscale(dir, player.radius * 1.2));
 	}
 
-	players = players.slice(0, playerCount + aiCount);
+	function intersectRay(start, dir, l) {
+		var result = 0;
 
-	var sceneDescriptions = [
-		{
-			offset: vec(0.25, 0.5),
-			viewport: rcoords(0, 0, 0.5, 1),
-			miniMapOffset: vec(0.25, 0.014)
-		},
-		{
-			offset: vec(0.75, 0.5),
-			viewport: rcoords(0.5, 0, 0.5, 1),
-			miniMapOffset: vec(0.75, 0.014)
-		}
-	];
+		var current = vclone(start);
+		var currentTile = vmap(current, Math.round);
+		var step = vmap(dir, Math.sign);
 
-	if (playerCount < 2) {
-		sceneDescriptions[0].viewport.sx = 1;
-		sceneDescriptions[0].offset.x = 0.5;
-		sceneDescriptions[0].miniMapOffset.x = 0.5;
+		while (result < l) {
+			if (MapLogic.isWall(MapLogic.getCell(map, currentTile))) {
+				return {
+					alpha: result,
+					tile: currentTile
+				};
+			}
 
-		players[0].name = getString('you_player_name');
+			var delta = vsub(vadd(currentTile, vscale(step, 0.5)), current);
+			var alphas = vdiv(delta, dir);
 
-		if (aiCount > 0) {
-			players[1].name = getString('opponent_player_name');
-		}
-	}
-
-	function update(dt) {
-		for (var i = 0; i < players.length; i++) {
-			var player = players[i];
-			var finished = playerLogic.update(map, player, dt);
-			if (finished) {
-				return player;
-			}			
-		}
-
-		if (aiPlayer) {
-			aiSystem.update(map, aiPlayer, roundStart);
-		}
-
-		playerCollision.update(players, dt);
-	}
-
-	function handleKeyDown(key) {
-		var action = KEY_MAP[key];
-		if (action) {
-			return playerLogic.handleInput(map, players[action.index], Dirs[action.dir]);
-		}
-	}
-
-	function highlightStartDirs() {
-		for (var dir in Dirs) {
-			if (MapLogic.canGo(map, startPos, Dirs[dir])) {
-				players.forEach(function(player) {
-					player.inputDisplay.highlight(dir);
-				});
+			if (alphas.x < alphas.y) {
+				current = vadd(current, vscale(dir, alphas.x));
+				currentTile.x += step.x;
+				result += alphas.x;
+			} else if (alphas.y < alphas.x) {
+				current = vadd(current, vscale(dir, alphas.y));
+				currentTile.y += step.y;
+				result += alphas.y;
+			} else {
+				current = vadd(current, vscale(dir, alphas.x));
+				currentTile = vadd(currentTile, step);
+				result += alphas.x;
 			}
 		}
+
+		return {
+			alpha: result
+		};
 	}
 
-	function clearHighlights() {
-		players.forEach(function(player) {
-			player.inputDisplay.clearHighlights();
-		});
+	function collideWithTile(tile, start, dir, l, radius) {
+		var step = vmap(dir, Math.sign);
+		var corner = vsub(tile, vscale(step, 0.5 + radius));
+		var delta = vsub(corner, start);
+
+		var alphas = vflip(vdiv(delta, dir));
+
+		var inter = vadd(start, vmul(alphas, dir));
+
+		if ((alphas.x <= l) && (Math.abs(inter.x - tile.x) < 0.5 + radius)) {
+			return {
+				pos: vec(inter.x, start.y + delta.y),
+				normal: vec(0, -step.y)
+			};
+		} else if ((alphas.y <= l) && (Math.abs(inter.y - tile.y) < 0.5 + radius)) {
+			return {
+				pos: vec(start.x + delta.x, inter.y),
+				normal: vec(-step.x, 0)
+			};
+		}
 	}
 
-	function scaleInputDisplays(value) {
-		players.forEach(function(player) {
-			player.inputDisplay.scale = value;
-		});
+	function collide(from, to, radius) {
+		if (veq(from, to)) { return; }
+
+		var delta = vsub(to, from);
+		var l = vlen(delta);
+		var dir = vscale(delta, 1 / l);
+		var off1 = vscale(vec(dir.y, -dir.x), radius);
+		var off2 = vscale(vec(-dir.y, dir.x), radius);
+
+		var inter1 = intersectRay(vadd(from, off1), dir, l + 2 * radius);
+		var inter2 = intersectRay(vadd(from, off2), dir, l + 2 * radius);
+
+		var minInter = inter1.alpha < inter2.alpha ? inter1 : inter2;
+		if (minInter.alpha <= l + 2 * radius) {
+			console.log('Collision:', minInter.tile);
+			return collideWithTile(minInter.tile, from, dir, l, radius);
+		}
 	}
 
-	var round = Behavior.run(function*() {
-		highlightStartDirs();
-		yield Behavior.filter(function(event) {
-			return (event.type === 'keydown') && handleKeyDown(event.keyCode);
-		});
-		roundStart = Time.now();
-
-		clearHighlights();
-		behaviorSystem.add(Behavior.interval(0.5, function(progress) {
-			scaleInputDisplays(lerp(1, 0.6, progress));
-		}));
-
-		var winningPlayer = yield Behavior.first(
-			Behavior.update(function(dt) {
-				timeLeft -= dt;
-				if (timeLeft <= 0) {
-					timeLeft = 0;
-					return null;
+	function waitForHookThrow() {
+		return Behavior.first(
+			Behavior.run(function*() {
+				while (true) {
+					var event = yield Behavior.type('mousemove');
+					player.hook = getHookPos(player, event.pos);
 				}
 			}),
-			Behavior.until(
-				Behavior.forever(function(event) {
-					if ((event.type === 'keydown') || (event.type === 'keyup')) {
-						handleKeyDown(event.keyCode);
-					}
-				}),
-				Behavior.update(update)
-			)
+			Behavior.type('mousedown')
 		);
+	}
 
-		var win = !!winningPlayer && ((playerCount > 1) || (winningPlayer === players[0]));
-		return { win: win, player: winningPlayer, time: Time.now() - roundStart };
-	})
+	function waitForHookGrip() {
+		var hookDir = vnorm(vsub(player.hook, player.pos));
+		var l = player.radius;
+
+		return Behavior.first(
+			Behavior.update(function(dt) {
+				l += dt * HOOK_SPEED;
+				if (l > MAX_HOOK_LENGTH) {
+					return false;
+				}
+
+				var hookPos = vadd(player.pos, vscale(hookDir, l));
+
+				var collision = collide(player.hook, hookPos, 0);
+				if (collision) {
+					player.hook = collision.pos;
+					return true;
+				}
+
+				player.hook = hookPos;
+			}),
+			Behavior.run(function*() {
+				yield Behavior.type('mouseup');
+				return false;
+			})
+		);
+	}
+
+	function retractHook() {
+		var hook = vclone(player.hook);
+		return Behavior.interval(0.2, function(progress) {
+			player.hook = vlerp(hook, player.pos, progress);
+		});
+	}
+
+	function pullPlayer() {
+		return Behavior.first(
+			Behavior.update(function(dt) {
+				var dir = vdir(player.pos, player.hook);
+				player.acceleration = vadd(player.acceleration, vscale(dir, PULL_FORCE));
+			}),
+			Behavior.type('mouseup')
+		);
+	}
+
+	function holdPlayer() {
+		var dist = vdist(player.hook, player.pos);
+
+		return Behavior.first(
+			Behavior.update(function(dt) {
+				var delta = vsub(player.hook, player.pos);
+				var l = vlen(delta);
+
+				if (l > dist) {
+					player.pos = vsub(player.hook, vscale(delta, dist / l));
+				}
+			}),
+			Behavior.type('mouseup')
+		);
+	}
 
 	var mainBehavior = Behavior.first(
-		Behavior.forever(behaviorSystem.update),
-		round
-	);
+		Behavior.run(function*() {
+			while (true) {
+				var event = yield waitForHookThrow();
 
-	function renderPlayerScene(context, map, players, mainPlayerIndex, description) {
-		var canvas = context.canvas;
+				if (!startTime) {
+					startTime = Time.now();
+				}
 
-		var size = vec(canvas.width, canvas.height);
-		var vp = rscale(description.viewport, size);
-		var off = vmul(description.offset, size);
-		var moff = vmul(description.miniMapOffset, size);
+				player.hook = getHookPos(player, event.pos);
 
-		var prioritizedPlayers = players.slice();
-		prioritizedPlayers.push(prioritizedPlayers.splice(mainPlayerIndex, 1)[0]);
+				player.grip = yield waitForHookGrip();
 
-		FrameProfiler.start('MapView');
-		mapView.render(context, vp, prioritizedPlayers, off);
-		FrameProfiler.stop();
+				if (player.grip) {
+					yield pullPlayer();
 
-		var player = players[mainPlayerIndex];
-		var inputDisplaySize = player.inputDisplay.size();
-		renderPivotTransformed(context, off.x, canvas.height - 110, 0, 1, inputDisplaySize.x * 0.5, inputDisplaySize.y, function(context) {
-			player.inputDisplay.render(context);
-		});
+					// player.pos = vlerp(player.pos, player.hook, 0.001);
+					// yield holdPlayer();
 
-		var speedDisplaySize = speedDisplay.size();
-		renderPivotTransformed(context, off.x, canvas.height - 20, 0, 1, speedDisplaySize.x * 0.5, speedDisplaySize.y, function(context) {
-			speedDisplay.render(context, player.speed, player.maxSpeed);
-		});
+					player.grip = false;
+				}
 
-		FrameProfiler.start('MiniMapView');
-		miniMapView.render(context, prioritizedPlayers, moff);
-		FrameProfiler.stop();
-	}
+				yield retractHook();
+			}
+		}),
+		Behavior.update(function(dt) {
+			var lastPos = player.pos;
+			player.acceleration = vadd(player.acceleration, GRAVITY);
+			player.pos = vadd(vadd(player.pos, vsub(player.pos, player.lastPos)), vscale(player.acceleration, dt * dt));
+			player.lastPos = lastPos;
+
+			var collision = collide(lastPos, player.pos, player.radius);
+			if (collision) {
+				var v = vsub(player.pos, player.lastPos);
+				player.pos = collision.pos;
+				v = vscale(vsub(v, vscale(collision.normal, 2 * vdot(collision.normal, v))), 0.2);
+				player.lastPos = vsub(player.pos, v);
+
+				// var delta = vsub(collision.pos, player.pos);
+				// player.pos = vadd(player.pos, vscale(collision.normal, 1.5 * vdot(delta, collision.normal)));
+
+				// collision = collide(lastPos, player.pos, player.radius);
+				// if (collision) {
+				// 	var delta = vsub(collision.pos, player.pos);
+				// 	player.pos = vadd(player.pos, vscale(collision.normal, 1.01 * vdot(delta, collision.normal)));
+				// }
+			}
+
+			if (!player.grip) {
+				player.hook = vadd(player.pos, vsub(player.hook, lastPos));
+			}
+
+			player.acceleration = vec(0, 0);
+
+			if (MapLogic.isFinish(MapLogic.getCell(map, player.pos))) {
+//				console.log('');
+				return { win: true, player: player, time: Time.now() - startTime };
+			}
+		})
+	)
 
 	return function(event) {
 		if (event.type !== 'show') {
@@ -211,18 +262,56 @@ var RaceScreen = function(behaviorSystem, level) {
 			}
 		} else {
 			var context = event.context;
+			var canvas = context.canvas;
 
-			for (var i = 0; i < playerCount; i++) {
-				renderPlayerScene(context, map, players, i, sceneDescriptions[i]);
-			}
+			var pos = player.pos;
 
-			if (timeLimit) {
-				renderTranslated(context, 20, 20, function(context) {
-					StringRenderer.render(context, timeLeft.toFixed(1), 40, MAIN_FONT, WIN_BG_STYLE.stroke, vec(0, 0));
+			var delta = vscale(vsub(offset, viewport), 1 / MAP_CELL_SIZE);
+			var topLeft = vsub(pos, delta);
+			var bottomRight = vadd(pos, delta);
+
+			var left = Math.floor(topLeft.x);
+			var top = Math.floor(topLeft.y);
+			var right = Math.ceil(bottomRight.x) + 1;
+			var bottom = Math.ceil(bottomRight.y) + 1;
+
+			CameraRenderer.viewport(context, viewport.x, viewport.y, viewport.sx, viewport.sy, function(context) {
+				renderTranslated(context, offset.x, offset.y, function(context) {
+					CameraRenderer.transform(context, pos, 0, MAP_CELL_SIZE, function(context) {
+						renderTranslated(context, left, top, function(context) {
+							PrimitiveRenderer.rect(context, { fill: MAP_STYLE.bg }, vec(right - left, bottom - top));
+						});
+
+						var mapSize = MapLogic.getSize(map);
+						mapSlice.render(context, map, left, top, right, bottom);
+
+						var r = player.radius;
+						renderTranslated(context, pos.x, pos.y, function(context) {
+							var hook = vsub(player.hook, player.pos);
+
+							context.strokeStyle = player.style.stroke;
+							context.lineWidth = player.style.lineWidth;
+							context.beginPath();
+							context.moveTo(0, 0);
+							context.lineTo(hook.x, hook.y);
+							context.stroke();
+
+							var hookR = 0.2 * r;
+							renderPivotTransformed(context, hook.x, hook.y, 0, 1, hookR, hookR, function(context) {
+								PrimitiveRenderer.circle(context, player.style, hookR);
+							});
+
+							renderPivotTransformed(context, 0, 0, 0, 1, r, r, function(context) {
+								PrimitiveRenderer.circle(context, player.style, r);
+							});
+						});
+					});
 				});
-			}
+			});
+
+			miniMapView.render(context, [player], vec(640, 20));
 		}
 
 		return { done: false };
-	};
+	};	
 }

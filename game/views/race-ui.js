@@ -48,7 +48,7 @@ var RaceUi = function() {
 
 				var textAlpha = startMessageBox.textAlpha;
 				yield Behavior.interval(0.5, function(progress) {
-					startMessageBox.textAlpha = lerp(textAlpha, 0, progress);
+					startMessageBox.textAlpha = Math.lerp(textAlpha, 0, progress);
 					startMessageBox.boxAlpha = 1 - progress;
 				});
 

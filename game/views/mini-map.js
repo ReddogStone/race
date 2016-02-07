@@ -23,7 +23,7 @@ var MiniMapView = function(map, visibleSize) {
 
 			renderPivotTransformed(context, offset.x, offset.y, 0, 1, pivot.x, pivot.y, function(context) {
 				CameraRenderer.transform(context, vec(0, 0), 0, MINIMAP_CELL_SIZE, function(context) {
-					var mainPlayerPos = players[players.length - 1].mapPos;
+					var mainPlayerPos = players[players.length - 1].pos;
 
 					context.save();
 					context.beginPath();
@@ -35,9 +35,9 @@ var MiniMapView = function(map, visibleSize) {
 
 					context.restore();
 
-					renderTranslated(context, 1.5, 1.5, function(context) { 
+					renderTranslated(context, 1.5, 1.5, function(context) {
 						players.forEach(function(player) {
-							renderTransformed(context, player.mapPos.x, player.mapPos.y, player.rotation, 1, function(context) {
+							renderTransformed(context, player.pos.x, player.pos.y, 0, 1, function(context) {
 								PlayerRenderer.forMinimap(context, player.style);
 							});
 						});
