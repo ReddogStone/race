@@ -18,6 +18,7 @@ var MainScreen = function(level) {
 	var player = {
 		pos: vclone(startPos),
 		lastPos: vclone(startPos),
+		acceleration: vec(0, 0),
 		hook: vadd(startPos, vec(0.05, 0)),
 		radius: 0.4,
 		style: PLAYER_STYLE
@@ -164,17 +165,8 @@ var MainScreen = function(level) {
 	function pullPlayer() {
 		return Behavior.first(
 			Behavior.update(function(dt) {
-				var delta = vsub(player.hook, player.pos);
-				var l = vlen(delta);
-				var step = dt * dt * PULL_FORCE;
-
-				if (l < step) {
-					player.pos = vclone(player.hook);
-				} else if (l > MAX_HOOK_LENGTH) {
-					player.pos = vsub(player.hook, vscale(delta, (MAX_HOOK_LENGTH - step) / l));
-				} else {
-					player.pos = vadd(player.pos, vscale(delta, step / l));
-				}
+				var dir = vdir(player.pos, player.hook);
+				player.acceleration = vadd(player.acceleration, vscale(dir, PULL_FORCE));
 			}),
 			Behavior.type('mouseup')
 		);
@@ -218,18 +210,27 @@ var MainScreen = function(level) {
 		}),
 		Behavior.update(function(dt) {
 			var lastPos = player.pos;
-			player.pos = vadd(vadd(player.pos, vsub(player.pos, player.lastPos)), vscale(GRAVITY, dt * dt));
+			player.acceleration = vadd(player.acceleration, GRAVITY);
+			player.pos = vadd(vadd(player.pos, vsub(player.pos, player.lastPos)), vscale(player.acceleration, dt * dt));
 			player.lastPos = lastPos;
 
 			var collision = collide(lastPos, player.pos, player.radius);
 			if (collision) {
-				var v = vsub(collision.pos, player.lastPos);
-				player.pos = collision.pos;
+				var delta = vsub(collision.pos, player.pos);
+				player.pos = vadd(player.pos, vscale(collision.normal, 1.01 * vdot(delta, collision.normal)));
+
+				collision = collide(lastPos, player.pos, player.radius);
+				if (collision) {
+					var delta = vsub(collision.pos, player.pos);
+					player.pos = vadd(player.pos, vscale(collision.normal, 1.01 * vdot(delta, collision.normal)));
+				}
 			}
 
 			if (!player.grip) {
 				player.hook = vadd(player.pos, vsub(player.hook, lastPos));
 			}
+
+			player.acceleration = vec(0, 0);
 
 			if (MapLogic.isFinish(MapLogic.getCell(map, player.pos))) {
 				console.log('FINISH');
