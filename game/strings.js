@@ -110,14 +110,14 @@ var STRINGS = {
 		'ru': 'Иногда придеться оттолкнуться от препятствия, чтоб продолжить путь.'
 	},
 	'level5_title': {
-		'en-us': 'Challenges',
-		'de': 'Herausforderungen',
-		'ru': 'Вызовы'
+		'en-us': 'Challenge',
+		'de': 'Herausforderung',
+		'ru': 'Вызов'
 	},
 	'level5_msg': {
-		'en-us': 'Given plenty of opportunities, it is easy to go for the simple path. But facing challenges early prepares you for the later race.',
-		'de': 'Wenn du viele Möglichkeiten hast, ist es einfach auf dem leichten Weg zu bleiben. Doch wer Herausforderungen früh annimmt, ist auf das weitere Rennen besser vorbereitet.',
-		'ru': 'Когда есть много возможностей, оставаться на легком пути просто. Но принимать вызовы как можно раньше готовит тебя к дальнейшей гонке.'
+		'en-us': 'Let\'s try a real challenge now.',
+		'de': 'Lass uns eine echte Herausforderung probieren.',
+		'ru': 'Давай попробуем настоящий вызов.'
 	},
 	'level6_title': {
 		'en-us': 'Experience',
