@@ -42,15 +42,15 @@ var RootScreen = function() {
 				players: 1,
 				ai: 0,
 				map: [
-					"00000000000",
-					"00000000000",
-					"00 00 00 00",
-					"00000000000",
-					"X000000000Y",
-					"00000000000",
-					"00 00 00 00",
-					"00000000000",
-					"00000000000"
+					"X00  000000",
+					"0 0  00  00",
+					"000   00 00",
+					"  00 000 00",
+					" 000 00  00",
+					"000 00   00",
+					"00 00 00000",
+					"00000 0    ",
+					"0000  0000Y"
 				],
 				message: {
 					title: getString('level3_title'),
@@ -107,7 +107,7 @@ var RootScreen = function() {
 		while (true) {
 			// yield TitleScreen();
 
-			for (var i = 0; i < levels.length; i++) {
+			for (var i = 3; i < levels.length; i++) {
 				var level = levels[i];
 				yield MainScreen(level);
 			}

@@ -13,25 +13,73 @@ var RaceScreen = function(behaviorSystem, level) {
 	var PULL_FORCE = 20;
 	var GRAVITY = vec(0, 0);
 	var HOOK_SPEED = 10;
-	var RESTITUTION = 0.3;
+	var RESTITUTION = 0.8;
 	var FRICTION = 1;
 	var FRICTION_CUTOFF = 0.5;
-	var BASE_THRUST = 5;
+	var BASE_THRUST = 20;
 
 	var startPos = MapLogic.getStart(map);
 
+	function makeVertex(p) {
+		return {
+			pos: vclone(p),
+			lastPos: vclone(p)
+		};
+	}
+
+	function makeEdge(v1, v2) {
+		return {
+			v1: v1,
+			v2: v2,
+			l: vdist(v1.pos, v2.pos)
+		};
+	}
+
+	var vertices = [
+		vclone(startPos),
+		vadd(startPos, vec(-0.3, -0.15)),
+		vadd(startPos, vec(-0.3, 0.15)),
+		vadd(startPos, vec(0.12, 0.1)),
+		vadd(startPos, vec(0.12, -0.1))
+	].map(makeVertex);
+
+	var edges = [
+		makeEdge(vertices[1], vertices[2]),
+		makeEdge(vertices[2], vertices[3]),
+		makeEdge(vertices[3], vertices[4]),
+		makeEdge(vertices[4], vertices[1]),
+
+		makeEdge(vertices[1], vertices[3]),
+		makeEdge(vertices[2], vertices[4]),
+
+		makeEdge(vertices[1], vertices[0]),
+		makeEdge(vertices[2], vertices[0]),
+		// makeEdge(vertices[3], vertices[0]),
+		// makeEdge(vertices[4], vertices[0]),
+	];
+
 	var player = {
-		pos: vclone(startPos),
-		lastPos: vclone(startPos),
+		vertices: vertices,
+		edges: edges,
+
+		// pos: vclone(startPos),
+		// lastPos: vclone(startPos),
 
 		thrust: 0,
 		dir: vec(1, 0),
 
 		hook: vadd(startPos, vec(0.05, 0)),
-		radius: 0.4,
+		radius: 0.05,
 		style: PLAYER_STYLE,
 
-		name: getString('you_player_name')
+		name: getString('you_player_name'),
+
+		get pos() {
+			return this.vertices[0].pos;
+		},
+		set pos(value) {
+			this.vertices[0].pos = value;
+		}
 	};
 
 	var particles = [];
@@ -240,7 +288,7 @@ var RaceScreen = function(behaviorSystem, level) {
 		player.thrust = l;
 	}
 
-	function acceleratePlayer() {
+	function acceleratePlayerWithMouse() {
 		return Behavior.run(function*() {
 			var event = yield Behavior.type('mousedown');
 			setAcceleration(player, event.pos);
@@ -264,7 +312,7 @@ var RaceScreen = function(behaviorSystem, level) {
 		});
 	}
 
-/*	function acceleratePlayer() {
+	function acceleratePlayerWithKeys() {
 		return Behavior.run(function*() {
 			var event = yield Behavior.type('keydown');
 
@@ -288,7 +336,7 @@ var RaceScreen = function(behaviorSystem, level) {
 
 			player.thrust = 0;
 		});
-	} */
+	}
 
 	function hookPlayer() {
 		return Behavior.run(function*() {
@@ -312,52 +360,116 @@ var RaceScreen = function(behaviorSystem, level) {
 		});		
 	}
 
+	function moveVertex(vertex, acceleration, dt) {
+		var lastPos = vertex.pos;
+
+		var v = dt > 0 ? vscale(vsub(vertex.pos, vertex.lastPos), 1 / dt) : vec(0, 0);
+		var vl = vlen(v);
+		var vd = vl > 0 ? vscale(v, 1 / vl) : vec(0, 0);
+
+		vl = Math.max(vl, FRICTION_CUTOFF);
+
+		acceleration = vsub(acceleration, vscale(vd, vl * vl * FRICTION));
+
+		vertex.pos = vadd(vadd(vertex.pos, vsub(vertex.pos, vertex.lastPos)), vscale(acceleration, dt * dt));
+		vertex.lastPos = lastPos;
+	}
+
+	function collideVertex(vertex) {
+		var collision = collide(vertex.lastPos, vertex.pos, 0);
+		if (collision) {
+			// var v = vsub(vertex.pos, vertex.lastPos);
+			// vertex.pos = collision.pos;
+			// v = vscale(vsub(v, vscale(collision.normal, 2 * vdot(collision.normal, v))), RESTITUTION);
+			// vertex.lastPos = vsub(vertex.pos, v);
+
+			var delta = vsub(collision.pos, vertex.pos);
+			vertex.pos = vadd(vertex.pos, vscale(collision.normal, 1.01 * vdot(delta, collision.normal)));
+			vertex.pos = vlerp(vertex.lastPos, vertex.pos, RESTITUTION);
+
+			collision = collide(vertex.lastPos, vertex.pos, 0);
+			if (collision) {
+				var delta = vsub(collision.pos, vertex.pos);
+				vertex.pos = vadd(vertex.pos, vscale(collision.normal, 1.01 * vdot(delta, collision.normal)));
+				vertex.pos = vlerp(vertex.lastPos, vertex.pos, RESTITUTION);
+			}
+		}
+	}
+
+	function handleEdges(edges) {
+		edges.forEach(function(edge) {
+			var v1 = edge.v1;
+			var v2 = edge.v2;
+
+			var middle = vscale(vadd(v1.pos, v2.pos), 0.5);
+			var dir = vdir(v1.pos, v2.pos);
+			v1.pos = vsub(middle, vscale(dir, 0.5 * edge.l));
+			v2.pos = vadd(middle, vscale(dir, 0.5 * edge.l));
+		});
+	}
+
 	var mainBehavior = Behavior.first(
-		Behavior.repeat(acceleratePlayer),
+		Behavior.repeat(acceleratePlayerWithMouse),
 		// Behavior.repeat(hookPlayer),
 		Behavior.update(function(dt) {
-			var lastPos = player.pos;
+			// var lastPos = player.pos;
 
-			var v = dt > 0 ? vscale(vsub(player.pos, player.lastPos), 1 / dt) : vec(0, 0);
-			var vl = vlen(v);
-			var vd = vl > 0 ? vscale(v, 1 / vl) : vec(0, 0);
+			// var v = dt > 0 ? vscale(vsub(player.pos, player.lastPos), 1 / dt) : vec(0, 0);
+			// var vl = vlen(v);
+			// var vd = vl > 0 ? vscale(v, 1 / vl) : vec(0, 0);
 
-			vl = Math.max(vl, FRICTION_CUTOFF);
+			// vl = Math.max(vl, FRICTION_CUTOFF);
+
+			// var thrust = vscale(player.dir, player.thrust * BASE_THRUST);
+			// acceleration = vsub(vadd(thrust, GRAVITY), vscale(vd, vl * vl * FRICTION));
+
+			// if (player.grip) {
+			// 	// var toHook = vdir(player.pos, player.hook);
+			// 	// acceleration = vadd(acceleration, vscale(toHook, PULL_FORCE));
+			// }
+
+			// player.pos = vadd(vadd(player.pos, vsub(player.pos, player.lastPos)), vscale(acceleration, dt * dt));
+			// player.lastPos = lastPos;
+
+			// var collision = collide(lastPos, player.pos, 0);
+			// if (collision) {
+			// 	// var v = vsub(player.pos, player.lastPos);
+			// 	// player.pos = collision.pos;
+			// 	// v = vscale(vsub(v, vscale(collision.normal, 2 * vdot(collision.normal, v))), RESTITUTION);
+			// 	// player.lastPos = vsub(player.pos, v);
+
+			// 	var delta = vsub(collision.pos, player.pos);
+			// 	player.pos = vadd(player.pos, vscale(collision.normal, 1.01 * vdot(delta, collision.normal)));
+
+			// 	collision = collide(lastPos, player.pos, 0);
+			// 	if (collision) {
+			// 		var delta = vsub(collision.pos, player.pos);
+			// 		player.pos = vadd(player.pos, vscale(collision.normal, 1.01 * vdot(delta, collision.normal)));
+			// 	}
+			// }
 
 			var thrust = vscale(player.dir, player.thrust * BASE_THRUST);
-			acceleration = vsub(vadd(thrust, GRAVITY), vscale(vd, vl * vl * FRICTION));
-
-			if (player.grip) {
-				// var toHook = vdir(player.pos, player.hook);
-				// acceleration = vadd(acceleration, vscale(toHook, PULL_FORCE));
+			for (var i = 0; i < player.vertices.length; i++) {
+				var a = (i === 0) ? thrust : vec(0, 0);
+				var vertex = player.vertices[i];
+				moveVertex(vertex, a, dt);
 			}
 
-			player.pos = vadd(vadd(player.pos, vsub(player.pos, player.lastPos)), vscale(acceleration, dt * dt));
-			player.lastPos = lastPos;
-
-			var collision = collide(lastPos, player.pos, player.radius);
-			if (collision) {
-				// var v = vsub(player.pos, player.lastPos);
-				// player.pos = collision.pos;
-				// v = vscale(vsub(v, vscale(collision.normal, 2 * vdot(collision.normal, v))), RESTITUTION);
-				// player.lastPos = vsub(player.pos, v);
-
-				var delta = vsub(collision.pos, player.pos);
-				player.pos = vadd(player.pos, vscale(collision.normal, 1.01 * vdot(delta, collision.normal)));
-
-				collision = collide(lastPos, player.pos, player.radius);
-				if (collision) {
-					var delta = vsub(collision.pos, player.pos);
-					player.pos = vadd(player.pos, vscale(collision.normal, 1.01 * vdot(delta, collision.normal)));
-				}
+			for (var i = 0; i < 10; i++) {
+				handleEdges(player.edges);
 			}
+
+			player.vertices.forEach(collideVertex);
+
+			var d1 = vsub(player.vertices[0].pos, player.vertices[1].pos);
+			var d2 = vsub(player.vertices[0].pos, player.vertices[2].pos);
+			var dir = vnorm(vadd(d1, d2));
+
+			// player.dir = vnorm(vadd(d1, d2));
 
 			if (!player.grip) {
-				player.hook = vadd(player.pos, vsub(player.hook, lastPos));
-			}
-
-			if (!veq(player.lastPos, player.pos)) {
-//				player.dir = vdir(player.lastPos, player.pos);
+				// player.hook = vadd(player.pos, vsub(player.hook, player.vertices[0].lastPos));
+				player.hook = vsub(player.pos, vscale(vnorm(player.dir), 0.05));
 			}
 
 			if (MapLogic.isFinish(MapLogic.getCell(map, player.pos))) {
@@ -410,14 +522,38 @@ var RaceScreen = function(behaviorSystem, level) {
 							context.stroke();
 
 							var hookR = 0.2 * r;
-							renderPivotTransformed(context, hook.x, hook.y, 0, 1, hookR, hookR, function(context) {
+							renderPivotTransformed(context, 0, 0, 0, 1, hookR, hookR, function(context) {
 								PrimitiveRenderer.circle(context, player.style, hookR);
 							});
 
-							renderPivotTransformed(context, 0, 0, 0, 1, r, r, function(context) {
-								PrimitiveRenderer.circle(context, player.style, r);
-							});
+							// renderPivotTransformed(context, 0, 0, 0, 1, r, r, function(context) {
+							// 	PrimitiveRenderer.circle(context, player.style, r);
+							// });
 						});
+
+						player.edges
+							.filter(function(edge, index) {
+								return index < 4;
+							})
+							.forEach(function(edge) {
+								var p1 = edge.v1.pos;
+								var p2 = edge.v2.pos;
+
+								context.strokeStyle = player.style.stroke;
+								context.lineWidth = player.style.lineWidth;
+								context.beginPath();
+								context.moveTo(p1.x, p1.y);
+								context.lineTo(p2.x, p2.y);
+								context.stroke();
+							});
+
+						player.vertices
+							.filter(function(vertex, index) { return (index !== 0); })
+							.forEach(function(vertex) {
+								renderPivotTransformed(context, vertex.pos.x, vertex.pos.y, 0, 1, r, r, function(context) {
+									PrimitiveRenderer.circle(context, player.style, r);
+								});
+							});
 
 						FrameProfiler.start('Particles');
 						particles.forEach(function(particle) {
