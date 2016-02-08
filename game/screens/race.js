@@ -10,11 +10,13 @@ var RaceScreen = function(behaviorSystem, level) {
 
 	var MIN_PULL_LENGTH = 0.3;
 	var MAX_HOOK_LENGTH = 4;
-	var PULL_FORCE = 2;
+	var PULL_FORCE = 20;
 	var GRAVITY = vec(0, 0);
-	var HOOK_SPEED = 5;
+	var HOOK_SPEED = 10;
 	var RESTITUTION = 0.3;
 	var FRICTION = 1;
+	var FRICTION_CUTOFF = 0.5;
+	var BASE_THRUST = 5;
 
 	var startPos = MapLogic.getStart(map);
 
@@ -22,7 +24,8 @@ var RaceScreen = function(behaviorSystem, level) {
 		pos: vclone(startPos),
 		lastPos: vclone(startPos),
 
-		accelerateDir: vec(0, 0),
+		thrust: 0,
+		dir: vec(1, 0),
 
 		hook: vadd(startPos, vec(0.05, 0)),
 		radius: 0.4,
@@ -207,7 +210,7 @@ var RaceScreen = function(behaviorSystem, level) {
 
 		var start = vclone(player.pos);
 		var deviation = vscale(vsub(vec(Math.random(), Math.random()), vec(0.5, 0.5)), 0.3);
-		var finish = vadd(vsub(player.pos, player.accelerateDir), deviation);
+		var finish = vadd(player.pos, deviation);
 
 		behaviorSystem.add(Behavior.run(function*() {
 			yield Behavior.interval(1, function(progress) {
@@ -231,7 +234,10 @@ var RaceScreen = function(behaviorSystem, level) {
 
 	function setAcceleration(player, pos) {
 		var worldPos = toWorldSpace(player.pos, pos);
-		player.accelerateDir = vsub(worldPos, player.pos);
+		var delta = vsub(worldPos, player.pos);
+		var l = vlen(delta);
+		player.dir = vnorm(delta);
+		player.thrust = l;
 	}
 
 	function acceleratePlayer() {
@@ -254,60 +260,104 @@ var RaceScreen = function(behaviorSystem, level) {
 				Behavior.type('mouseup')
 			);
 
-			player.accelerateDir = vec(0, 0);
+			player.thrust = 0;
 		});
 	}
 
-	var mainBehavior = Behavior.first(
-		Behavior.run(function*() {
+/*	function acceleratePlayer() {
+		return Behavior.run(function*() {
+			var event = yield Behavior.type('keydown');
+
+			var keyCode = event.keyCode;
+			if (keyCode === 68) {
+				player.thrust = 1;
+			} else if (keyCode === 65) {
+				player.thrust = -1;
+			}
+
+			if (!startTime) {
+				startTime = Time.now();
+			}
+
+			yield Behavior.first(
+				createAccelerationParticles(player),
+				Behavior.filter(function(event) {
+					return (event.type === 'keyup') && (event.keyCode === keyCode);
+				})
+			);
+
+			player.thrust = 0;
+		});
+	} */
+
+	function hookPlayer() {
+		return Behavior.run(function*() {
 			while (true) {
-//				var event = yield waitForHookThrow();
+				var event = yield waitForHookThrow();
 
-				yield acceleratePlayer();
-
-/*				player.hook = getHookPos(player, event.pos);
+				player.hook = getHookPos(player, event.pos);
 
 				player.grip = yield waitForHookGrip();
 
 				if (player.grip) {
-					yield pullPlayer();
+					// yield Behavior.type('mouseup');
+
+					yield holdPlayer();
 
 					player.grip = false;
 				}
 
-				yield retractHook(); */
+				yield retractHook();
 			}
-		}),
+		});		
+	}
+
+	var mainBehavior = Behavior.first(
+		Behavior.repeat(acceleratePlayer),
+		// Behavior.repeat(hookPlayer),
 		Behavior.update(function(dt) {
 			var lastPos = player.pos;
 
-			var v = vscale(vsub(player.pos, player.lastPos), 1 / dt);
+			var v = dt > 0 ? vscale(vsub(player.pos, player.lastPos), 1 / dt) : vec(0, 0);
 			var vl = vlen(v);
 			var vd = vl > 0 ? vscale(v, 1 / vl) : vec(0, 0);
-			acceleration = vsub(vadd(player.accelerateDir, GRAVITY), vscale(vd, vl * vl * FRICTION));
+
+			vl = Math.max(vl, FRICTION_CUTOFF);
+
+			var thrust = vscale(player.dir, player.thrust * BASE_THRUST);
+			acceleration = vsub(vadd(thrust, GRAVITY), vscale(vd, vl * vl * FRICTION));
+
+			if (player.grip) {
+				// var toHook = vdir(player.pos, player.hook);
+				// acceleration = vadd(acceleration, vscale(toHook, PULL_FORCE));
+			}
 
 			player.pos = vadd(vadd(player.pos, vsub(player.pos, player.lastPos)), vscale(acceleration, dt * dt));
 			player.lastPos = lastPos;
 
 			var collision = collide(lastPos, player.pos, player.radius);
 			if (collision) {
-				var v = vsub(player.pos, player.lastPos);
-				player.pos = collision.pos;
-				v = vscale(vsub(v, vscale(collision.normal, 2 * vdot(collision.normal, v))), RESTITUTION);
-				player.lastPos = vsub(player.pos, v);
+				// var v = vsub(player.pos, player.lastPos);
+				// player.pos = collision.pos;
+				// v = vscale(vsub(v, vscale(collision.normal, 2 * vdot(collision.normal, v))), RESTITUTION);
+				// player.lastPos = vsub(player.pos, v);
 
-				// var delta = vsub(collision.pos, player.pos);
-				// player.pos = vadd(player.pos, vscale(collision.normal, 1.01 * vdot(delta, collision.normal)));
+				var delta = vsub(collision.pos, player.pos);
+				player.pos = vadd(player.pos, vscale(collision.normal, 1.01 * vdot(delta, collision.normal)));
 
-				// collision = collide(lastPos, player.pos, player.radius);
-				// if (collision) {
-				// 	var delta = vsub(collision.pos, player.pos);
-				// 	player.pos = vadd(player.pos, vscale(collision.normal, 1.01 * vdot(delta, collision.normal)));
-				// }
+				collision = collide(lastPos, player.pos, player.radius);
+				if (collision) {
+					var delta = vsub(collision.pos, player.pos);
+					player.pos = vadd(player.pos, vscale(collision.normal, 1.01 * vdot(delta, collision.normal)));
+				}
 			}
 
 			if (!player.grip) {
 				player.hook = vadd(player.pos, vsub(player.hook, lastPos));
+			}
+
+			if (!veq(player.lastPos, player.pos)) {
+//				player.dir = vdir(player.lastPos, player.pos);
 			}
 
 			if (MapLogic.isFinish(MapLogic.getCell(map, player.pos))) {
@@ -369,6 +419,7 @@ var RaceScreen = function(behaviorSystem, level) {
 							});
 						});
 
+						FrameProfiler.start('Particles');
 						particles.forEach(function(particle) {
 							var particleRadius = 0.02;
 							var p = particle.pos;
@@ -378,6 +429,7 @@ var RaceScreen = function(behaviorSystem, level) {
 								context.globalAlpha = 1;
 							});
 						});
+						FrameProfiler.stop();
 					});
 				});
 			});

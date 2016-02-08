@@ -168,6 +168,13 @@ var Behavior = (function() {
 				}),
 				finishingBehavior
 			);
+		},
+		repeat: function(behaviorGetter) {
+			return Behavior.run(function*() {
+				while (true) {
+					yield behaviorGetter();
+				}
+			});
 		}
 	};
 })();

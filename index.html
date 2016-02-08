@@ -98,7 +98,7 @@ window.requestAnimFrame = (function(callback) {
 	window.mozRequestAnimationFrame ||
 	window.oRequestAnimationFrame ||
 	window.msRequestAnimationFrame ||
-	function(callback){
+	function(callback) {
 		return window.setTimeout(callback, 1000 / 60);
 	};
 })();
@@ -167,7 +167,7 @@ function onload() {
 	var lastT = Time.now();
 	requestAnimFrame(function show() {
 		var t = Time.now();
-		var dt = Math.max(t - lastT, 0.033);
+		var dt = t - lastT;
 		lastT = t;
 
 		FrameProfiler.startFrame();

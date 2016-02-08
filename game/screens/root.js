@@ -5,6 +5,15 @@ var RootScreen = function() {
 				players: 1,
 				ai: 0,
 				map: [
+					"00 000 Y",
+					"X0 0 0 0",
+					"0000 000",
+				]
+			},
+			{
+				players: 1,
+				ai: 0,
+				map: [
 					"00000Y",
 					"X00000",
 				],
