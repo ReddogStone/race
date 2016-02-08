@@ -148,12 +148,14 @@ function onload() {
 		var pos = getMousePos(canvas, event);
 		pos.x *= canvas.width / document.body.clientWidth;
 		pos.y *= canvas.height / document.body.clientHeight;
-		rootScreen({ type: event.type, pos: pos });
+		rootScreen({ type: event.type, pos: pos, buttons: event.buttons });
 	}
 
-	canvas.addEventListener('mousedown', handleMouseEvent, false);
-	canvas.addEventListener('mousemove', handleMouseEvent, false);
-	document.addEventListener('mouseup', handleMouseEvent, false);
+	canvas.addEventListener('mousedown', handleMouseEvent, true);
+	canvas.addEventListener('mousemove', handleMouseEvent, true);
+	document.addEventListener('mouseup', handleMouseEvent, true);
+
+	canvas.addEventListener('contextmenu', function(e) { e.preventDefault(); }, true);
 
 	window.addEventListener('blur', function() {
 		Sound.pauseAll();

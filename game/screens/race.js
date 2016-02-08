@@ -10,16 +10,20 @@ var RaceScreen = function(behaviorSystem, level) {
 
 	var MIN_PULL_LENGTH = 0.3;
 	var MAX_HOOK_LENGTH = 4;
-	var PULL_FORCE = 0.5;
+	var PULL_FORCE = 2;
 	var GRAVITY = vec(0, 0);
 	var HOOK_SPEED = 5;
+	var RESTITUTION = 0.3;
+	var FRICTION = 1;
 
 	var startPos = MapLogic.getStart(map);
 
 	var player = {
 		pos: vclone(startPos),
 		lastPos: vclone(startPos),
-		acceleration: vec(0, 0),
+
+		accelerateDir: vec(0, 0),
+
 		hook: vadd(startPos, vec(0.05, 0)),
 		radius: 0.4,
 		style: PLAYER_STYLE,
@@ -27,16 +31,18 @@ var RaceScreen = function(behaviorSystem, level) {
 		name: getString('you_player_name')
 	};
 
+	var particles = [];
+
 	var startTime = 0;
 
-	function toWorldSpace(player, p) {
-		return vadd(vscale(vsub(p, offset), 1 / MAP_CELL_SIZE), player.pos);
+	function toWorldSpace(center, p) {
+		return vadd(vscale(vsub(p, offset), 1 / MAP_CELL_SIZE), center);
 	}
 
 	var getMouseEvent = Behavior.filter(function(event) { return (['mousemove', 'mousedown'].indexOf(event.type) >= 0) });
 
 	function getHookPos(player, mousePos) {
-		var worldPos = toWorldSpace(player, mousePos);
+		var worldPos = toWorldSpace(player.pos, mousePos);
 		var dir = vnorm(vsub(worldPos, player.pos));
 		return vadd(player.pos, vscale(dir, player.radius * 1.2));
 	}
@@ -115,7 +121,6 @@ var RaceScreen = function(behaviorSystem, level) {
 
 		var minInter = inter1.alpha < inter2.alpha ? inter1 : inter2;
 		if (minInter.alpha <= l + 2 * radius) {
-			console.log('Collision:', minInter.tile);
 			return collideWithTile(minInter.tile, from, dir, l, radius);
 		}
 	}
@@ -193,46 +198,106 @@ var RaceScreen = function(behaviorSystem, level) {
 		);
 	}
 
+	function createParticle(player) {
+		var particle = {
+			alpha: 1,
+			pos: vclone(player.pos)
+		};
+		particles.push(particle);
+
+		var start = vclone(player.pos);
+		var deviation = vscale(vsub(vec(Math.random(), Math.random()), vec(0.5, 0.5)), 0.3);
+		var finish = vadd(vsub(player.pos, player.accelerateDir), deviation);
+
+		behaviorSystem.add(Behavior.run(function*() {
+			yield Behavior.interval(1, function(progress) {
+				particle.alpha = 1 - progress;
+				particle.pos = vlerp(start, finish, progress);
+			});
+			particles.splice(particles.indexOf(particle), 1);
+		}));
+	}
+
+	function createAccelerationParticles(player) {
+		return Behavior.run(function*() {
+			while (true) {
+				for (var i = 0; i < 3; i++) {
+					createParticle(player);
+				}
+				yield Behavior.wait(0.05);
+			}
+		});
+	}
+
+	function setAcceleration(player, pos) {
+		var worldPos = toWorldSpace(player.pos, pos);
+		player.accelerateDir = vsub(worldPos, player.pos);
+	}
+
+	function acceleratePlayer() {
+		return Behavior.run(function*() {
+			var event = yield Behavior.type('mousedown');
+			setAcceleration(player, event.pos);
+
+			if (!startTime) {
+				startTime = Time.now();
+			}
+
+			yield Behavior.first(
+				createAccelerationParticles(player),
+				Behavior.run(function*() {
+					while (true) {
+						var event = yield Behavior.type('mousemove');
+						setAcceleration(player, event.pos);
+					}
+				}),
+				Behavior.type('mouseup')
+			);
+
+			player.accelerateDir = vec(0, 0);
+		});
+	}
+
 	var mainBehavior = Behavior.first(
 		Behavior.run(function*() {
 			while (true) {
-				var event = yield waitForHookThrow();
+//				var event = yield waitForHookThrow();
 
-				if (!startTime) {
-					startTime = Time.now();
-				}
+				yield acceleratePlayer();
 
-				player.hook = getHookPos(player, event.pos);
+/*				player.hook = getHookPos(player, event.pos);
 
 				player.grip = yield waitForHookGrip();
 
 				if (player.grip) {
 					yield pullPlayer();
 
-					// player.pos = vlerp(player.pos, player.hook, 0.001);
-					// yield holdPlayer();
-
 					player.grip = false;
 				}
 
-				yield retractHook();
+				yield retractHook(); */
 			}
 		}),
 		Behavior.update(function(dt) {
 			var lastPos = player.pos;
-			player.acceleration = vadd(player.acceleration, GRAVITY);
-			player.pos = vadd(vadd(player.pos, vsub(player.pos, player.lastPos)), vscale(player.acceleration, dt * dt));
+
+			var v = vscale(vsub(player.pos, player.lastPos), 1 / dt);
+			var vl = vlen(v);
+			var vd = vl > 0 ? vscale(v, 1 / vl) : vec(0, 0);
+			acceleration = vsub(vadd(player.accelerateDir, GRAVITY), vscale(vd, vl * vl * FRICTION));
+
+			player.pos = vadd(vadd(player.pos, vsub(player.pos, player.lastPos)), vscale(acceleration, dt * dt));
 			player.lastPos = lastPos;
 
 			var collision = collide(lastPos, player.pos, player.radius);
 			if (collision) {
 				var v = vsub(player.pos, player.lastPos);
 				player.pos = collision.pos;
-				v = vscale(vsub(v, vscale(collision.normal, 2 * vdot(collision.normal, v))), 0.2);
+				v = vscale(vsub(v, vscale(collision.normal, 2 * vdot(collision.normal, v))), RESTITUTION);
 				player.lastPos = vsub(player.pos, v);
 
 				// var delta = vsub(collision.pos, player.pos);
-				// player.pos = vadd(player.pos, vscale(collision.normal, 1.5 * vdot(delta, collision.normal)));
+				// player.pos = vadd(player.pos, vscale(collision.normal, 1.01 * vdot(delta, collision.normal)));
 
 				// collision = collide(lastPos, player.pos, player.radius);
 				// if (collision) {
@@ -244,8 +309,6 @@ var RaceScreen = function(behaviorSystem, level) {
 			if (!player.grip) {
 				player.hook = vadd(player.pos, vsub(player.hook, lastPos));
 			}
-
-			player.acceleration = vec(0, 0);
 
 			if (MapLogic.isFinish(MapLogic.getCell(map, player.pos))) {
 //				console.log('');
@@ -303,6 +366,16 @@ var RaceScreen = function(behaviorSystem, level) {
 
 							renderPivotTransformed(context, 0, 0, 0, 1, r, r, function(context) {
 								PrimitiveRenderer.circle(context, player.style, r);
+							});
+						});
+
+						particles.forEach(function(particle) {
+							var particleRadius = 0.02;
+							var p = particle.pos;
+							renderPivotTransformed(context, p.x, p.y, 0, 1, particleRadius, particleRadius, function(context) {
+								context.globalAlpha = particle.alpha;
+								PrimitiveRenderer.circle(context, player.style, particleRadius);
+								context.globalAlpha = 1;
 							});
 						});
 					});

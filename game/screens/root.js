@@ -90,13 +90,13 @@ var RootScreen = function() {
 	return Screen.run(function*() {
 		yield LoadingScreen();
 
-		var languageId = yield LanguageSelectionScreen();
-		getString = Localization(STRINGS, languageId);
+		// var languageId = yield LanguageSelectionScreen();
+		// getString = Localization(STRINGS, languageId);
 
 		var levels = getLevels();
 		
 		while (true) {
-			yield TitleScreen();
+			// yield TitleScreen();
 
 			for (var i = 0; i < levels.length; i++) {
 				var level = levels[i];
