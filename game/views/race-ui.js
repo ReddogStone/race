@@ -23,8 +23,18 @@ var RaceUi = function() {
 				endMessageBox.scale = progress;
 			});
 			yield Behavior.first(Behavior.type('keydown'), Behavior.type('mousedown'));
-			endMessageBox = null;			
+			endMessageBox = null;
 		});
+	}
+
+	function renderText(context, message, height, fontName, color, anchor) {
+		context.save();
+		context.shadowColor = '#999';
+		context.shadowBlur = 15;
+		context.shadowOffsetX = 5;
+		context.shadowOffsetY = 5;
+		StringRenderer.render(context, message, height, fontName, color, anchor);
+		context.restore();
 	}
 
 	return {
@@ -87,10 +97,10 @@ var RaceUi = function() {
 					});
 
 					renderTranslated(context, 0, -0.7 * height, function(context) {
-						StringRenderer.render(context, endMessageBox.lines[0], height, MAIN_FONT, color, vec(0.5, 0.5));
+						renderText(context, endMessageBox.lines[0], height, MAIN_FONT, color, vec(0.5, 0.5));
 					});
 					renderTranslated(context, 0, 0.7 * height, function(context) {
-						StringRenderer.render(context, endMessageBox.lines[1], height, MAIN_FONT, color, vec(0.5, 0.5));
+						renderText(context, endMessageBox.lines[1], height, MAIN_FONT, color, vec(0.5, 0.5));
 					});
 				});
 			}
@@ -113,7 +123,7 @@ var RaceUi = function() {
 
 					var y = -0.5 * (rectSize.y) + scale * 30;
 					renderTranslated(context, 0, y, function(context) {
-						StringRenderer.render(context, startMessageBox.title, titleHeight, MAIN_FONT, color, vec(0.5, 0));
+						renderText(context, startMessageBox.title, titleHeight, MAIN_FONT, color, vec(0.5, 0));
 					});
 					y += titleHeight + messageHeight;
 
@@ -143,20 +153,20 @@ var RaceUi = function() {
 
 					lines.forEach(function(line) {
 						renderTranslated(context, -0.5 * (rectSize.x - margin), y, function(context) {
-							StringRenderer.render(context, line, messageHeight, MAIN_FONT, color, vec(0, 0));
+							renderText(context, line, messageHeight, MAIN_FONT, color, vec(0, 0));
 						});
 						y += messageHeight * 1.2;
 					});
 
 					y += messageHeight;
 					renderTranslated(context, 0, y, function(context) {
-						StringRenderer.render(context, startMessageBox.mission,
+						renderText(context, startMessageBox.mission,
 							messageHeight, MAIN_FONT, START_MESSAGE_BOX_STYLE.missionColor, vec(0.5, 0));
 					});
 
 					context.globalAlpha = 1;
 				});
-			}			
+			}
 		}
 	};
 };

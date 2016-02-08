@@ -8,7 +8,11 @@ var RootScreen = function() {
 					"00 000 Y",
 					"X0 0 0 0",
 					"0000 000",
-				]
+				],
+				message: {
+					title: getString('level1_title'),
+					message: getString('level1_msg')
+				}
 			},
 			{
 				players: 1,
