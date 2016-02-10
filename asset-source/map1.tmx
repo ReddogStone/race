@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="11" height="9" tilewidth="1" tileheight="1" nextobjectid="35">
+ <tileset firstgid="1" name="Pseudo" tilewidth="1" tileheight="1" tilecount="4" columns="4">
+  <image source="pseudo-tile-set.png" width="4" height="1"/>
+ </tileset>
+ <layer name="Kachelebene 1" width="11" height="9" offsetx="-0.5" offsety="-0.5">
+  <data encoding="csv">
+2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,
+2,2,1,2,2,1,2,2,1,2,2,
+2,2,2,2,2,2,2,2,2,2,2,
+3,2,2,2,2,2,2,2,2,2,4,
+2,2,2,2,2,2,2,2,2,2,2,
+2,2,1,2,2,1,2,2,1,2,2,
+2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2
+</data>
+ </layer>
+ <objectgroup name="Objektebene 1" offsetx="-0.25" offsety="-0.25">
+  <object id="1" x="2" y="1" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="3" x="1" y="2" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="4" x="2" y="3" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="5" x="3" y="2" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="14" x="2.00556" y="4.99444" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="15" x="2.00556" y="6.99444" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="16" x="1.00556" y="5.99444" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="17" x="3.00556" y="5.99444" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="18" x="4.99444" y="5.00556" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="19" x="4.99444" y="7.00556" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="20" x="3.99444" y="6.00556" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="21" x="5.99444" y="6.00556" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="22" x="7.99444" y="5.01667" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="23" x="7.99444" y="7.01667" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="24" x="6.99444" y="6.01667" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="25" x="8.99444" y="6.01667" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="26" x="7.99444" y="0.994444" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="27" x="7.99444" y="2.99444" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="28" x="6.99444" y="1.99444" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="29" x="8.99444" y="1.99444" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="30" x="4.98333" y="0.983333" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="31" x="4.98333" y="2.98333" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="32" x="3.98333" y="1.98333" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+  <object id="33" x="5.98333" y="1.98333" width="0.5" height="0.5">
+   <ellipse/>
+  </object>
+ </objectgroup>
+</map>

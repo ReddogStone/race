@@ -1,5 +1,6 @@
 var RaceScreen = function(behaviorSystem, level) {
 	var map = level.map;
+	var dots = (level.dots || []).slice();
 	var mapSlice = MapSlice();
 	var miniMapView = MiniMapView(map);
 
@@ -14,9 +15,11 @@ var RaceScreen = function(behaviorSystem, level) {
 	var GRAVITY = vec(0, 0);
 	var HOOK_SPEED = 10;
 	var RESTITUTION = 0.3;
-	var FRICTION = 1;
-	var FRICTION_CUTOFF = 0.5;
-	var BASE_THRUST = 5;
+	var FRICTION = 2;
+	var FRICTION_CUTOFF = 1;
+	var BASE_THRUST = 10;
+	var MAX_THRUST_L = 1;
+	var BUFF_STRENGTH = 3;
 
 	var startPos = MapLogic.getStart(map);
 
@@ -26,6 +29,7 @@ var RaceScreen = function(behaviorSystem, level) {
 
 		thrust: 0,
 		dir: vec(1, 0),
+		buffs: 0,
 
 		hook: vadd(startPos, vec(0.05, 0)),
 		radius: 0.4,
@@ -222,14 +226,12 @@ var RaceScreen = function(behaviorSystem, level) {
 	}
 
 	function createAccelerationParticles(player) {
-		return Behavior.run(function*() {
-			while (true) {
-				for (var i = 0; i < 3; i++) {
-					createParticle(player);
-				}
-				yield Behavior.wait(0.05);
+		return function() {
+			for (var i = 0; i < 3; i++) {
+				createParticle(player);
 			}
-		});
+			return Behavior.wait(0.05);
+		};
 	}
 
 	function setAcceleration(player, pos) {
@@ -237,30 +239,24 @@ var RaceScreen = function(behaviorSystem, level) {
 		var delta = vsub(worldPos, player.pos);
 		var l = vlen(delta);
 		player.dir = vnorm(delta);
-		player.thrust = l;
+		player.thrust = Math.min(l, MAX_THRUST_L);
 	}
 
-	function acceleratePlayer() {
+	function controlPlayer() {
 		return Behavior.run(function*() {
 			var event = yield Behavior.type('mousedown');
 			setAcceleration(player, event.pos);
+			startTime = Time.now();
 
-			if (!startTime) {
-				startTime = Time.now();
-			}
-
-			yield Behavior.first(
-				createAccelerationParticles(player),
+			yield Behavior.parallel(
+				Behavior.repeat(createAccelerationParticles(player)),
 				Behavior.run(function*() {
 					while (true) {
 						var event = yield Behavior.type('mousemove');
 						setAcceleration(player, event.pos);
-					}
-				}),
-				Behavior.type('mouseup')
+					};
+				})
 			);
-
-			player.thrust = 0;
 		});
 	}
 
@@ -312,9 +308,30 @@ var RaceScreen = function(behaviorSystem, level) {
 		});		
 	}
 
+	function eatDots() {
+		var eaten = 0;
+		for (var i = dots.length - 1; i >= 0; i--) {
+			var d = vdist(player.pos, dots[i].pos);
+			if (d <= player.radius) {
+				dots.splice(i, 1);
+				eaten++;
+			}
+		}
+
+		if (eaten > 0) {
+			player.buffs += eaten;
+
+			behaviorSystem.add(Behavior.run(function*() {
+				yield Behavior.wait(5);
+				player.buffs -= eaten;
+			}));
+		}
+	}
+
 	var mainBehavior = Behavior.first(
-		Behavior.repeat(acceleratePlayer),
+		controlPlayer(),
 		// Behavior.repeat(hookPlayer),
+		Behavior.update(eatDots),
 		Behavior.update(function(dt) {
 			var lastPos = player.pos;
 
@@ -324,7 +341,7 @@ var RaceScreen = function(behaviorSystem, level) {
 
 			vl = Math.max(vl, FRICTION_CUTOFF);
 
-			var thrust = vscale(player.dir, player.thrust * BASE_THRUST);
+			var thrust = vscale(player.dir, player.thrust * (1 + BUFF_STRENGTH * player.buffs) * BASE_THRUST);
 			acceleration = vsub(vadd(thrust, GRAVITY), vscale(vd, vl * vl * FRICTION));
 
 			if (player.grip) {
@@ -398,11 +415,19 @@ var RaceScreen = function(behaviorSystem, level) {
 						var mapSize = MapLogic.getSize(map);
 						mapSlice.render(context, map, left, top, right, bottom);
 
+						dots.forEach(function(dot) {
+							var dotRadius = 0.05;
+							var p = dot.pos;
+							renderPivotTransformed(context, p.x, p.y, 0, 1, dotRadius, dotRadius, function(context) {
+								PrimitiveRenderer.circle(context, PLAYER2_STYLE, dotRadius);
+							});
+						});
+
 						var r = player.radius;
 						renderTranslated(context, pos.x, pos.y, function(context) {
 							var hook = vsub(player.hook, player.pos);
 
-							context.strokeStyle = player.style.stroke;
+/*							context.strokeStyle = player.style.stroke;
 							context.lineWidth = player.style.lineWidth;
 							context.beginPath();
 							context.moveTo(0, 0);
@@ -412,23 +437,31 @@ var RaceScreen = function(behaviorSystem, level) {
 							var hookR = 0.2 * r;
 							renderPivotTransformed(context, hook.x, hook.y, 0, 1, hookR, hookR, function(context) {
 								PrimitiveRenderer.circle(context, player.style, hookR);
-							});
+							}); */
+
+							var style = (player.buffs > 0) ? PLAYER2_STYLE : PLAYER_STYLE;
 
 							renderPivotTransformed(context, 0, 0, 0, 1, r, r, function(context) {
-								PrimitiveRenderer.circle(context, player.style, r);
+								PrimitiveRenderer.circle(context, style, r);
 							});
 						});
 
 						FrameProfiler.start('Particles');
 						particles.forEach(function(particle) {
-							var particleRadius = 0.02;
+							var particleRadius = 0.03;
 							var p = particle.pos;
 							renderPivotTransformed(context, p.x, p.y, 0, 1, particleRadius, particleRadius, function(context) {
 								context.globalAlpha = particle.alpha;
-								PrimitiveRenderer.circle(context, player.style, particleRadius);
+								var style = {
+									fill: player.style.fill,
+									stroke: player.style.stroke,
+									lineWidth: player.style.lineWidth * 0.5
+								};
+								PrimitiveRenderer.circle(context, style, particleRadius);
 								context.globalAlpha = 1;
 							});
 						});
+
 						FrameProfiler.stop();
 					});
 				});

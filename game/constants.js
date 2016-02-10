@@ -23,7 +23,8 @@ var PLAYER_STYLE = {
 
 var PLAYER2_STYLE = {
 	fill: PALETTE.tertiary[4],
-	stroke: PALETTE.tertiary[0]
+	stroke: PALETTE.tertiary[0],
+	lineWidth: 0.05
 };
 
 var PLAYER_GEOMETRY = {
